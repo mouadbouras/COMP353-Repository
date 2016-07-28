@@ -28,6 +28,7 @@ class AssignmentsController extends AppController
      */
     public function index()
     {
+        $this->taOnly();
         $this->paginate = [
             'contain' => ['Sections']
         ];
@@ -159,8 +160,9 @@ class AssignmentsController extends AppController
      *
      * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
      */
-    public function create()
+    public function add()
     {
+        $this->taOnly();
         $assignment = $this->Assignments->newEntity();
         if ($this->request->is('post')) {
             $assignment = $this->Assignments->patchEntity($assignment, $this->request->data);
@@ -186,6 +188,7 @@ class AssignmentsController extends AppController
      */
     public function edit($id = null)
     {
+        $this->taOnly();
         $assignment = $this->Assignments->get($id, [
             'contain' => []
         ]);
@@ -213,6 +216,7 @@ class AssignmentsController extends AppController
      */
     public function delete($id = null)
     {
+        $this->taOnly();
         $this->request->allowMethod(['post', 'delete']);
         $assignment = $this->Assignments->get($id);
         if ($this->Assignments->delete($assignment)) {
@@ -278,6 +282,7 @@ class AssignmentsController extends AppController
 
             return true;
     }
+
     public function saveUploadFile($file, $file_name){
 
 
@@ -306,6 +311,13 @@ class AssignmentsController extends AppController
             }
 
             return $ext;
+    }
+
+    public function taOnly(){
+        if (!$this->request->session()->read('user')->isTa()) {
+            $this->redirect(['action' => 'view']);
+        }
+        return;
     }
 
 }

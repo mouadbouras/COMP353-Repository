@@ -137,18 +137,26 @@ class UsersController extends AppController
                 'limit' => 1,
                 'fields' => ['user_id', 'section_id', 'team_id']
                 ]);
+                
+                $session = $this->request->session();
+                $session->write('user',  $this->Users->newEntity($user));
 
                 $student->hydrate(false);
                 //check if the person who logged in is a student
-                if($student->first() )
+                if($student->first() && $user['permission_level'] < 3 )
                 {
-                    $session = $this->request->session();
+                    $session->write('permission_level', $user['permission_level']) ;
                     $session->write('current_student', $student->first());
                     return $this->redirect('assignments/view');
                 }
-                //send everone else to assignments
-                else{
+                //send TA else to assignments
+                else if ($user['permission_level'] == 3){
+                    $session->write('permission_level', $user['permission_level']);
                     return $this->redirect('assignments');
+                }
+                else{
+                    return $this->redirect('users');
+
                 }
 
                 //print_r($student->first());

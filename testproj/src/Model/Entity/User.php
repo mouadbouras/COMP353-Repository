@@ -50,5 +50,12 @@ class User extends Entity
        return (new DefaultPasswordHasher)->hash($password);
    }
 
+   public function isTa(){
+        return ($this->permission_level == 3);
+   }
+
+   public function isStudent(){
+        return ($this->permission_level == 1 || $this->permission_level == 2);
+   }
 
 }

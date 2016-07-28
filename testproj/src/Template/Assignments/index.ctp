@@ -2,10 +2,10 @@
     <ul class="side-nav">
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Html->link(__('New Assignment'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Sections'), ['controller' => 'Sections', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Section'), ['controller' => 'Sections', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Submissions'), ['controller' => 'Submissions', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Submission'), ['controller' => 'Submissions', 'action' => 'add']) ?></li>
+        <!-- <li><?// $this->Html->link(__('List Sections'), ['controller' => 'Sections', 'action' => 'index']) ?></li> -->
+        <!-- <li><?// $this->Html->link(__('New Section'), ['controller' => 'Sections', 'action' => 'add']) ?></li> -->
+<!--         <li><?// $this->Html->link(__('List Submissions'), ['controller' => 'Submissions', 'action' => 'index']) ?></li>
+        <li><?// $this->Html->link(__('New Submission'), ['controller' => 'Submissions', 'action' => 'add']) ?></li> -->
     </ul>
 </nav>
 <div class="assignments index large-9 medium-8 columns content">
@@ -25,10 +25,10 @@
             <tr>
                 <td><?= $this->Number->format($assignment->id) ?></td>
                 <td><?= h($assignment->name) ?></td>
-                <td><?= $assignment->has('section') ? $this->Html->link($assignment->section->id, ['controller' => 'Sections', 'action' => 'view', $assignment->section->id]) : '' ?></td>
+                <td><?= h($assignment->section->id)//$assignment->has('section') ? $this->Html->link($assignment->section->id, ['controller' => 'Sections', 'action' => 'view', $assignment->section->id]) : '' ?></td>
                 <td><?= h($assignment->due_date) ?></td>
                 <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $assignment->id]) ?>
+                    <?= ""//$this->Html->link(__('View'), ['action' => 'view', $assignment->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $assignment->id]) ?>
                     <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $assignment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $assignment->id)]) ?>
                 </td>

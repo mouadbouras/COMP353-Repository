@@ -4,8 +4,8 @@
         <li><?= $this->Html->link(__('List Assignments'), ['action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('List Sections'), ['controller' => 'Sections', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Section'), ['controller' => 'Sections', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Submissions'), ['controller' => 'Submissions', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Submission'), ['controller' => 'Submissions', 'action' => 'add']) ?></li>
+        <!-- <li><?// $this->Html->link(__('List Submissions'), ['controller' => 'Submissions', 'action' => 'index']) ?></li> -->
+        <!-- <li><?// $this->Html->link(__('New Submission'), ['controller' => 'Submissions', 'action' => 'add']) ?></li> -->
     </ul>
 </nav>
 <div class="assignments form large-9 medium-8 columns content">

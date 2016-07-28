@@ -4,11 +4,11 @@
         <li><?= $this->Html->link(__('Edit User'), ['action' => 'edit', $user->id]) ?> </li>
         <li><?= $this->Form->postLink(__('Delete User'), ['action' => 'delete', $user->id], ['confirm' => __('Are you sure you want to delete # {0}?', $user->id)]) ?> </li>
         <li><?= $this->Html->link(__('List Users'), ['action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New User'), ['action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Files'), ['controller' => 'Files', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New File'), ['controller' => 'Files', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Students'), ['controller' => 'Students', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Student'), ['controller' => 'Students', 'action' => 'add']) ?> </li>
+<!--         <li><?// $this->Html->link(__('New User'), ['action' => 'add']) ?> </li>
+        <li><?// $this->Html->link(__('List Files'), ['controller' => 'Files', 'action' => 'index']) ?> </li>
+        <li><?// $this->Html->link(__('New File'), ['controller' => 'Files', 'action' => 'add']) ?> </li>
+        <li><?// $this->Html->link(__('List Students'), ['controller' => 'Students', 'action' => 'index']) ?> </li>
+        <li><?// $this->Html->link(__('New Student'), ['controller' => 'Students', 'action' => 'add']) ?> </li> -->
     </ul>
 </nav>
 <div class="users view large-9 medium-8 columns content">
@@ -18,10 +18,10 @@
             <th><?= __('Username') ?></th>
             <td><?= h($user->username) ?></td>
         </tr>
-        <tr>
-            <th><?= __('Password') ?></th>
-            <td><?= h($user->password) ?></td>
-        </tr>
+<!--         <tr>
+            <th><?// __('Password') ?></th>
+            <td><?// h($user->password) ?></td>
+        </tr> -->
         <tr>
             <th><?= __('Email') ?></th>
             <td><?= h($user->email) ?></td>

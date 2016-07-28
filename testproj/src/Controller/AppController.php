@@ -78,4 +78,11 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
     }
+
+        public function taOnly(){
+        if ($this->request->session()->read('permission_level') < 3) {
+            $this->redirect(['action' => 'view']);
+        }
+        return;
+    }
 }
