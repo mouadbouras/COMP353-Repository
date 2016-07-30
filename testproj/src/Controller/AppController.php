@@ -16,7 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
-use Cake\I18n\Time;
+use App\Model\Entity\User;
 
 /**
  * Application Controller
@@ -59,9 +59,6 @@ class AppController extends Controller
             ],
             'storage' => 'Session'
         ]);
-
-
-
     }
 
     /**
@@ -77,12 +74,9 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
-    }
 
-        public function taOnly(){
-        if ($this->request->session()->read('permission_level') < 3) {
-            $this->redirect(['action' => 'view']);
-        }
-        return;
+        $this->set('user', null);
+        if($user = $this->Auth->user())
+            $this->set('user', new User($user));
     }
 }

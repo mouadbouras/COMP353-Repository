@@ -2,3 +2,16 @@
 /config/app.php
 /tmp/*
 /logs/*
+
+!/vendor/cakephp/
+/vendor/cakephp/*
+!/vendor/cakephp/cakephp/
+/vendor/cakephp/cakephp/*
+!/vendor/cakephp/cakephp/src/
+/vendor/cakephp/cakephp/src/*
+
+!/vendor/cakephp/cakephp/src/View/
+/vendor/cakephp/cakephp/src/View/*
+!/vendor/cakephp/cakephp/src/View/Helper/
+/vendor/cakephp/cakephp/src/View/Helper/*
+!/vendor/cakephp/cakephp/src/View/Helper/FormHelper.php

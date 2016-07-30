@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\ORM\TableRegistry;
 
 /**
  * User Entity
@@ -46,16 +47,23 @@ class User extends Entity
     ];
 
     protected function _setPassword($password)
-   {
-       return (new DefaultPasswordHasher)->hash($password);
-   }
+    {
+        return (new DefaultPasswordHasher)->hash($password);
+    }
 
-   public function isTa(){
+    public function isAdmin(){
+        return ($this->permission_level == 4);
+    }
+    public function isTa(){
         return ($this->permission_level == 3);
-   }
-
-   public function isStudent(){
+    }
+    public function isStudent($sectionid = null){
+        if($sectionid){
+            $studentsTable = TableRegistry::get('Students');
+            return $studentsTable->exists(['user_id' => $this->id, 'section_id' => $sectionid]);
+        }
         return ($this->permission_level == 1 || $this->permission_level == 2);
-   }
+    }
+
 
 }

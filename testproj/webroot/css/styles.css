@@ -1,0 +1,79 @@
+body{
+	background-color: rgb(250, 240, 230);
+}
+
+.center{
+	width: 100%;
+	text-align: center;
+}
+.message.success{
+	color: lime;
+}
+
+.message.error{
+	color: red;
+}
+
+form{
+	margin: 0 auto;
+	width: 300px;
+	padding: 19px;
+	border-radius: 5px;
+	text-align: left;
+}
+form legend{
+	padding-bottom: 0.2rem;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+}
+form label{
+	margin-bottom: 2px;
+	font-weight: bold;
+}
+form fieldset.form-group{
+	padding: 4px 0;
+	margin-bottom: 0.2rem;
+}
+form input.form-control{
+	padding: 3px 6px;
+}
+form fieldset.form-group.required > label:after {
+    content: '*';
+}
+form button[type="submit"]{
+	color: inherit;
+	font-weight: bold;
+	float: right;
+}
+
+#login, #courses{
+	padding: 3rem 1rem;
+}
+
+#title{
+	font-size: 3.5rem;
+	font-style: italic;
+	font-weight: bold;
+	display: block;
+	text-decoration: underline;
+	margin-bottom: 1.5rem;
+}
+
+#login #welcome{
+	background-color: rgb(51, 153, 255);
+	padding: 0.2rem;
+	font-size: 1.3rem;
+	font-weight: bold;
+}
+
+#courses #subtitle{
+	font-size: 1.5rem;
+	font-weight: bold;
+	padding-bottom: 1rem;
+	margin-bottom: 1rem;
+	border-bottom: 2px solid black;
+}
+
+#courses .role-group{
+	margin-bottom: 2rem;
+}

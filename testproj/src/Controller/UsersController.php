@@ -63,7 +63,7 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'login']);
             } else {
                 $this->Flash->error(__('The user could not be saved. Please, try again.'));
             }
@@ -131,39 +131,12 @@ class UsersController extends AppController
             $user = $this->Auth->identify();
             if ($user) {
                 $this->Auth->setUser($user);
-
-                $student = $this->Students->find('all', [
-                'conditions' => ['user_id' => $user['id'] ],
-                'limit' => 1,
-                'fields' => ['user_id', 'section_id', 'team_id']
+                return $this->redirect(['controller' => 'courses']);
+            } else {
+                $this->Flash->error(__('Invalid username or password, try again.'), [
+                    'key' => 'auth'
                 ]);
-                
-                $session = $this->request->session();
-                $session->write('user',  $this->Users->newEntity($user));
-
-                $student->hydrate(false);
-                //check if the person who logged in is a student
-                if($student->first() && $user['permission_level'] < 3 )
-                {
-                    $session->write('permission_level', $user['permission_level']) ;
-                    $session->write('current_student', $student->first());
-                    return $this->redirect('assignments/view');
-                }
-                //send TA else to assignments
-                else if ($user['permission_level'] == 3){
-                    $session->write('permission_level', $user['permission_level']);
-                    return $this->redirect('assignments');
-                }
-                else{
-                    return $this->redirect('users');
-
-                }
-
-                //print_r($student->first());
-
-                //return $this->redirect($this->Auth->redirectUrl());
             }
-            $this->Flash->error(__('Invalid username or password, try again'));
         }
     }
     public function logout()
