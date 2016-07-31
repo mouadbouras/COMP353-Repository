@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\I18n\Time;
+use App\Model\Entity\User;
 use finfo; 
 /**
  * Assignments Controller
@@ -11,14 +12,40 @@ use finfo;
  */
 class AssignmentsController extends AppController
 {
-
-        public function initialize()
+    public function isAuthorized($user = null){
+        $user = new User($user);
+        $action = $this->request->params['action'];
+        $pass = $this->request->params['pass'];
+        switch ($action) {
+            case 'view': 
+            case 'assignment':
+            case 'download':
+            case 'checkUploadFile':
+            case 'saveUploadFile':
+                return true;
+                break;
+            case 'index':
+            case 'add':
+            case 'edit':
+            case 'delete':
+                //can see - for section if TA for section
+                //can see all - if admin?
+                if($pass){
+                    return $user->isTA($pass[0]);
+                }else{
+                    return $user->isAdmin();
+                }
+                break;
+        }
+        return false;
+    }
+   
+    public function initialize()
     {
         parent::initialize();
         $this->loadModel('Files');
         $this->loadModel('Submissions');
-
-
+        $this->loadModel('Sections');
     }
 
     /**
@@ -26,16 +53,27 @@ class AssignmentsController extends AppController
      *
      * @return \Cake\Network\Response|null
      */
-    public function index()
+    public function index($sectionid = null)
     {
-        $this->taOnly();
+        //$this->taOnly();
         $this->paginate = [
             'contain' => ['Sections']
         ];
         $assignments = $this->paginate($this->Assignments);
+        if($sectionid){
+            $assignments = $this->paginate(
+                $this->Assignments->find()
+                    ->where(['section_id' => $sectionid])
+            );
+        }
 
         $this->set(compact('assignments'));
         $this->set('_serialize', ['assignments']);
+
+        $section = $this->Sections->get($sectionid, [
+            'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+        ]);
+        $this->set('section', $section);
     }
 
     /**
@@ -162,7 +200,7 @@ class AssignmentsController extends AppController
      */
     public function add()
     {
-        $this->taOnly();
+        //$this->taOnly();
         $assignment = $this->Assignments->newEntity();
         if ($this->request->is('post')) {
             $assignment = $this->Assignments->patchEntity($assignment, $this->request->data);
@@ -188,7 +226,7 @@ class AssignmentsController extends AppController
      */
     public function edit($id = null)
     {
-        $this->taOnly();
+        //$this->taOnly();
         $assignment = $this->Assignments->get($id, [
             'contain' => []
         ]);
@@ -216,7 +254,7 @@ class AssignmentsController extends AppController
      */
     public function delete($id = null)
     {
-        $this->taOnly();
+        //$this->taOnly();
         $this->request->allowMethod(['post', 'delete']);
         $assignment = $this->Assignments->get($id);
         if ($this->Assignments->delete($assignment)) {
@@ -314,7 +352,7 @@ class AssignmentsController extends AppController
     }
 
     public function taOnly(){
-        if (!$this->request->session()->read('user')->isTa()) {
+        if (!(new User($this->Auth->user()))->isTa()) {
             $this->redirect(['action' => 'view']);
         }
         return;

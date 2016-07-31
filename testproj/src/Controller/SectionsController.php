@@ -12,6 +12,14 @@ use App\Model\Entity\User;
  */
 class SectionsController extends AppController
 {
+    public function isAuthorized(){
+        //index
+        //view
+        //add
+        //edit
+        //delete
+        return true;
+    }
 
     /**
      * Index method
@@ -57,7 +65,7 @@ class SectionsController extends AppController
     {   
         $user = new User($this->Auth->user());
 
-        if($id && $user->isStudent($id)){
+        if($id && ($user->isStudent($id) || $user->isTA($id) || $user->isAdmin())){
             $section = $this->Sections->get($id, [
                 'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
             ]);

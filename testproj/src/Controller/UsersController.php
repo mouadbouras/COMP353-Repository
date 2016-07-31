@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\User;
 
 /**
  * Users Controller
@@ -10,14 +11,30 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
-
-
     public function initialize()
     {
         parent::initialize();
         $this->Auth->allow(['register']);
         $this->loadModel('Students');
+    }
 
+    public function isAuthorized($user = null){
+        $user = new User($user);
+        $action = $this->request->params['action'];
+        switch ($action) {
+            case 'login': 
+            case 'register': 
+            case 'logout': 
+                return true;
+                break;
+            case 'index':
+            case 'view':
+            case 'edit':
+            case 'delete':
+                return $user->isAdmin();
+                break;
+        }
+        return false;
     }
 
     /**
@@ -43,7 +60,7 @@ class UsersController extends AppController
     public function view($id = null)
     {
         $user = $this->Users->get($id, [
-            'contain' => ['Files', 'Students']
+            'contain' => []
         ]);
 
         $this->set('user', $user);
@@ -70,6 +87,26 @@ class UsersController extends AppController
         }
         $this->set(compact('user'));
         $this->set('_serialize', ['user']);
+    }
+
+    public function login()
+    {
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+                return $this->redirect(['controller' => 'sections']);
+            } else {
+                $this->Flash->error(__('Invalid username or password, try again.'), [
+                    'key' => 'auth'
+                ]);
+            }
+        }
+    }
+
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
     }
 
     /**
@@ -117,31 +154,4 @@ class UsersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-
-    /**
-     * Login method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function login()
-    {
-        if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect(['controller' => 'courses']);
-            } else {
-                $this->Flash->error(__('Invalid username or password, try again.'), [
-                    'key' => 'auth'
-                ]);
-            }
-        }
-    }
-    public function logout()
-    {
-        return $this->redirect($this->Auth->logout());
-    }
-
 }

@@ -54,7 +54,11 @@ class User extends Entity
     public function isAdmin(){
         return ($this->permission_level == 4);
     }
-    public function isTa(){
+    public function isTa($sectionid = null){
+        if($sectionid){
+            $sectionsTable = TableRegistry::get('sections');
+            return $sectionsTable->exists(['ta_user_id' => $this->id, 'id' => $sectionid]);
+        }
         return ($this->permission_level == 3);
     }
     public function isStudent($sectionid = null){
