@@ -1,41 +1,39 @@
-<div id='courses'>
-    <div class='center'>
-        <span id='title'>
-            <span style="color: red">C</span><span style="color: #efdf00">r</span><span style="color: #00ff00">s</span><span style="color: #663300">M</span><span style="color: blue">g</span><span style="color: #ff3399">r</span>
-        </span>
+<?php $this->extend('/Common/section_sidebar'); ?>
 
-        <div id='subtitle'>
-            Your Courses and Roles in CrsMgr -- The Course Manager System
-        </div>
-
-        <?php if($studentInfos->count()): ?>
-        <div class='role-group'>
-            You are currently a STUDENT in the following sections:
-            <?php foreach ($studentInfos as $studentInfo) { ?>
-                <div class='d-block'>
-                <?= $this->Html->link($studentInfo->section->course->name.' \ '.$studentInfo->section->id, ['controller' => 'Sections', 'action' => 'view', $studentInfo->section->id], ['class' => 'd-inline']); ?>
-                </div>
-            <?php } ?>
-        </div>
-        <?php endif; ?>
-
-        <?php if($taInfos->count()): ?>
-        <div class='role-group'>
-            You are currently a TA for the following sections:
-            <?php foreach ($taInfos as $taInfo) { ?>
-                <div class='d-block'>
-                <?= $this->Html->link($taInfo->course->name.' \ '.$taInfo->id, ['controller' => 'Sections', 'action' => 'view', $taInfo->id], ['class' => 'd-inline']); ?>
-                </div>
-            <?php } ?>
-        </div>
-        <?php endif; ?>
-
-        <?php if($user->isAdmin()){ ?>
-        <div class='role-group'>
-            Admin tools<br>sdfadsf<br>sdfasdf
-        </div>
-        <?php } ?>
-
-        <?= $this->Html->link('Log out', ['controller' => 'Users', 'action' => 'logout'], ['class' => 'underline']) ?>
+<div class="sections index large-9 medium-8 columns content">
+    <h3><?= __('Sections') ?></h3>
+    <table cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th><?= $this->Paginator->sort('id') ?></th>
+                <th><?= $this->Paginator->sort('course_id') ?></th>
+                <th><?= $this->Paginator->sort('semester_id') ?></th>
+                <th><?= $this->Paginator->sort('ta_user_id') ?></th>
+                <th class="actions"><?= __('Actions') ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($sections as $section): ?>
+            <tr>
+                <td><?= $this->Number->format($section->id) ?></td>
+                <td><?= $section->has('course') ? $this->Html->link($section->course->name, ['controller' => 'Courses', 'action' => 'view', $section->course->id]) : '' ?></td>
+                <td><?= $section->has('semester') ? $this->Html->link($section->semester->name, ['controller' => 'Semesters', 'action' => 'view', $section->semester->id]) : '' ?></td>
+                <td><?= $section->has('user') ? $this->Html->link($section->user->id, ['controller' => 'Users', 'action' => 'view', $section->user->id]) : '' ?></td>
+                <td class="actions">
+                    <?= $this->Html->link(__('View'), ['action' => 'view', $section->id]) ?>
+                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $section->id]) ?>
+                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $section->id], ['confirm' => __('Are you sure you want to delete # {0}?', $section->id)]) ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <div class="paginator">
+        <ul class="pagination">
+            <?= $this->Paginator->prev('< ' . __('previous')) ?>
+            <?= $this->Paginator->numbers() ?>
+            <?= $this->Paginator->next(__('next') . ' >') ?>
+        </ul>
+        <p><?= $this->Paginator->counter() ?></p>
     </div>
-<div>
+</div>

@@ -1,3 +1,3 @@
-<?php $this->extend('/Common/sidebar'); ?>
+<?php $this->extend('/Common/section_view_sidebar'); ?>
 
--- section "home" --
+abc

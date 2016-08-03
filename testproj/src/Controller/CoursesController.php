@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\User;
 
 /**
  * Courses Controller
@@ -10,6 +11,10 @@ use App\Controller\AppController;
  */
 class CoursesController extends AppController
 {
+    public function isAuthorized($user = null){
+        $user = new User($user);
+        return $user->isAdmin();
+    }
 
     /**
      * Index method
@@ -18,7 +23,10 @@ class CoursesController extends AppController
      */
     public function index()
     {
+        $courses = $this->paginate($this->Courses);
 
+        $this->set(compact('courses'));
+        $this->set('_serialize', ['courses']);
     }
 
     /**
@@ -31,7 +39,7 @@ class CoursesController extends AppController
     public function view($id = null)
     {
         $course = $this->Courses->get($id, [
-            'contain' => []
+            'contain' => ['Sections']
         ]);
 
         $this->set('course', $course);

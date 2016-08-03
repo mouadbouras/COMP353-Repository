@@ -28,30 +28,13 @@ class SectionsController extends AppController
      */
     public function index()
     {
-        $studentsTable = TableRegistry::get('Students');
+        $this->paginate = [
+            'contain' => ['Courses', 'Semesters', 'Users']
+        ];
+        $sections = $this->paginate($this->Sections);
 
-        //student in
-        $studentInfos = $studentsTable->find()
-            ->where(['user_id' => $this->Auth->user('id')])
-            ->contain([
-                'Sections.Semesters' => function(\Cake\ORM\Query $query){
-                    $semestersTable = TableRegistry::get('Semesters');
-                    return $semestersTable->selectCurrentSemesters($query);
-                }, 
-                'Sections.Courses']);
-
-        //ta in
-        $taInfos = $this->Sections->find()
-            ->where(['ta_user_id' => $this->Auth->user('id')])
-            ->contain(['Courses', 
-                       'Semesters' => function(\Cake\ORM\Query $query){
-                            $semestersTable = TableRegistry::get('Semesters');
-                            return $semestersTable->selectCurrentSemesters($query);
-                        }]);
-
-
-        $this->set('studentInfos', $studentInfos);
-        $this->set('taInfos', $taInfos);
+        $this->set(compact('sections'));
+        $this->set('_serialize', ['sections']);
     }
 
     /**
