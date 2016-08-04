@@ -68,6 +68,10 @@ class User extends Entity
         }
         return ($this->permission_level == 1 || $this->permission_level == 2);
     }
-
-
+    public function getGroup($sectionid){
+        $studentsTable = TableRegistry::get('Students');
+        $students = $studentsTable->find()
+            ->where(['user_id' => $this->id, 'section_id' => $sectionid]);
+        return $students->first()->team_id;
+    }
 }

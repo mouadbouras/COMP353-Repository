@@ -1,7 +1,4 @@
 <?php $this->extend('/Common/sidebar'); ?>
-<!-- <?= $section ?> -->
-
-<!-- <?php $this->start('sidebar_title'); ?><?php $this->end(); ?> -->
 <?php 
 	$this->set('sidebar_title', $section->course->name.' \ '.$section->id.'<br>'.$section->semester->name); 
 
@@ -10,18 +7,10 @@
 		$linkgroups[] = [
 			'title' => 'Student',
 			'links' => [
-				['text' => '123123123', 
-				 'url' => ['controller' => 'Sections', 
-				 		   'action' => 'index']],
-				['text' => 'aaa', 
-				 'url' => ['controller' => 'Sections', 
-				 		   'action' => 'index']],
-				['text' => 'bbb', 
-				 'url' => ['controller' => 'Sections', 
-				 		   'action' => 'index']],
-				['text' => 'ccc', 
-				 'url' => ['controller' => 'Sections', 
-				 		   'action' => 'index']]
+				['text' => 'Course Group', 
+				 'url' => ['controller' => 'Teams', 
+				 		   'action' => 'index',
+				 		   $section->id]]
 			]];
 	}
 
@@ -43,13 +32,10 @@
 		$linkgroups[] = [
 			'title' => 'Admin tools',
 			'links' => [
-				['text' => 'olololol', 
-				 'url' => ['controller' => 'Assignments', 
+				['text' => 'Manage Groups', 
+				 'url' => ['controller' => 'Teams', 
 				 		   'action' => 'index',
-				 		   	$section->id]],
-				['text' => 'asasasasasas', 
-				 'url' => ['controller' => 'Sections', 
-				 		   'action' => 'index']]
+				 		   	$section->id]]
 			]];
 	}
 

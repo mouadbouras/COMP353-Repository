@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\User;
 
 /**
  * Teams Controller
@@ -10,14 +11,34 @@ use App\Controller\AppController;
  */
 class TeamsController extends AppController
 {
+    public function isAuthorized($user = null){
+        $user = new User($user);
+        $action = $this->request->params['action'];
+        $pass = $this->request->params['pass'];
+        $section = $pass[0];
+        switch ($action) {
+            case 'add':
+            case 'delete':
+            case 'edit':
+                return ($user->isTA($section) || $user->isAdmin());
+                break;
+            case 'index':
+                if($group = $user->getGroup($section)){
+                    return $this->redirect(['action' => 'view', $group]);
+                }
+            case 'view':
+                return ($user->isStudent($section) || $user->isTA($section) || $user->isAdmin());
+                break;
+        }
+        return false;
+    }
 
-            public function initialize()
+    public function initialize()
     {
         parent::initialize();
         $this->loadModel('Students');
         $this->loadModel('Users');
-
-
+        $this->loadModel('Sections');
     }
 
 
@@ -26,15 +47,19 @@ class TeamsController extends AppController
      *
      * @return \Cake\Network\Response|null
      */
-    public function index()
+    public function index($id = null)
     {
-        $this->paginate = [
-            'contain' => ['Users', 'Sections']
-        ];
-        $teams = $this->paginate($this->Teams);
-
+        $teams = $this->Teams->find('all',
+                    ['contain' => ['Users', 'Sections']])
+                    ->where(['section_id' => $id]);
         $this->set(compact('teams'));
         $this->set('_serialize', ['teams']);
+
+        $section = $this->Sections->get($id, [
+                'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+            ]);
+        $this->set('section', $section);
+        $this->set('_serialize', ['section']);
     }
 
     /**
@@ -46,23 +71,34 @@ class TeamsController extends AppController
      */
     public function view($id = null)
     {
-        $team = $this->Teams->get($id);
-        //echo " id -> " .  $team->id . " section -> " . $team->section_id;
-        //die();
+        $user = new User($this->Auth->user());
+
+        $team = $this->Teams->get($id, 
+            ['contain' => 
+                ['Sections', 
+                'Sections.Semesters', 
+                'Sections.Courses']]);
+        $this->set('team', $team);
+        $this->set('_serialize', ['team']);
+
         $students = $this->Students->find('all', [
                 'conditions' => ['team_id' => $team->id , 
                                  'section_id' => $team->section_id]
                 ,'contain' => ['Users']
                 ]);
-
-        //$this->set('students', $students);
-        //$this->set('_serialize', ['students']);
-
         $this->set(compact('students' , 'users'));
         $this->set('_serialize', ['students']);
 
-        $this->set('team', $team);
-        $this->set('_serialize', ['team']);
+        $section = $team->section;
+        $this->set('section', $section);
+        $this->set('_serialize', ['section']);
+
+
+        $canEdit = $user->isAdmin();
+        $this->set('canEdit', $canEdit);
+
+        $isInGroup = $user->getGroup($team->section_id) == $id;
+        $this->set('isInGroup', $isInGroup);
     }
 
     /**

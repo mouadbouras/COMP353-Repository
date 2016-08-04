@@ -29,8 +29,7 @@ class PagesController extends AppController
 {
 
     public function isAuthorized($user = null){
-        if($user)
-            return true;
+        return true;
     }
 
     /**
