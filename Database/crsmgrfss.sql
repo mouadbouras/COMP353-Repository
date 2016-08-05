@@ -58,7 +58,12 @@ CREATE TABLE `courses` (
 INSERT INTO `courses` (`id`, `name`) VALUES
 (1, 'COMP353'),
 (2, 'COMP345'),
-(3, 'super');
+(3, 'super'),
+(5, 'Databases'),
+(6, 'Engineering'),
+(7, 'Mathematics'),
+(8, 'Computers'),
+(9, 'Electronics');
 
 -- --------------------------------------------------------
 
@@ -97,17 +102,19 @@ CREATE TABLE `sections` (
   `id` int(11) UNSIGNED NOT NULL,
   `course_id` int(11) UNSIGNED NOT NULL,
   `semester_id` int(11) UNSIGNED NOT NULL,
-  `ta_user_id` int(11) UNSIGNED DEFAULT NULL
+  `ta_user_id` int(11) UNSIGNED DEFAULT NULL,
+  `instructor_user_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `sections`
 --
 
-INSERT INTO `sections` (`id`, `course_id`, `semester_id`, `ta_user_id`) VALUES
-(5, 1, 1, NULL),
-(6, 1, 1, 1),
-(8, 3, 1, 1);
+INSERT INTO `sections` (`id`, `course_id`, `semester_id`, `ta_user_id`, `instructor_user_id`) VALUES
+(5, 1, 1, NULL, 4),
+(6, 1, 1, 1, NULL),
+(8, 3, 1, 1, 4),
+(9, 7, 1, 6, NULL);
 
 -- --------------------------------------------------------
 
@@ -221,7 +228,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `first_name`, `last_name`, `crsmgrid`, `permission_level`) VALUES
 (1, 'raz', '$2y$10$itcxI9jf3ZzBkdWJEA5HROhI/7KwQ9jm8rMbzqxxVmqblvncSo9Ra', 'raz@email.com', 'raz', 'r', 342, 4),
-(2, 'mouad', '$2y$10$trnTlM5diWeDGUU1JFcJme/gYS6GFOav/yXFu5iJywFtkXbAoPYhi', 'mouad@email.com', 'mouad', 'bro', 276, 1);
+(2, 'mouad', '$2y$10$trnTlM5diWeDGUU1JFcJme/gYS6GFOav/yXFu5iJywFtkXbAoPYhi', 'mouad@email.com', 'mouad', 'bro', 276, 1),
+(5, 'onlystudent', '$2y$10$4.46ZgHmbiRZhBR73amxTeDfcbm1F9nThef5Y8rD/tkkCUQtANSt2', 'onlystudent@mail.com', 'OnlyA', 'Student', 1, 1),
+(6, 'onlyta', '$2y$10$NZwR0Ep1BICByDqmP7rrOebRTRTUO79ttOeKOJcg48GC2TuukpxVS', 'onlyta@mail.com', 'OnlyA', 'TA', 2, 1),
+(7, 'onlyinstructor', '$2y$10$TCTLIaWRyJpTdX8rlzxCPOLXE/eZjux6.B2b2CkbajuAS/.BfH31e', 'onlyinstructor@mail.com', 'OnlyA', 'Instructor', 3, 1),
+(8, 'onlyadmin', '$2y$10$yzdjsjAxxgN1PKc6QKwhseEh0j7NFQZCZtr3DyCwBj2eIJzJk0yoK', 'onlyadmin@mail.com', 'OnlyA', 'Admin', 4, 4);
 
 --
 -- Indexes for dumped tables
@@ -254,7 +265,8 @@ ALTER TABLE `sections`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_sections_course_id` (`course_id`),
   ADD KEY `fk_sections_semester_id` (`semester_id`),
-  ADD KEY `fk_sections_user_id` (`ta_user_id`);
+  ADD KEY `fk_sections_user_id` (`ta_user_id`),
+  ADD KEY `instructor_user_id` (`instructor_user_id`);
 
 --
 -- Indexes for table `semesters`
