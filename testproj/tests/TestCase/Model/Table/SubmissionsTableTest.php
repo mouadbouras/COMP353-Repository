@@ -27,10 +27,12 @@ class SubmissionsTableTest extends TestCase
         'app.submissions',
         'app.assignments',
         'app.sections',
-        'app.teams',
-        'app.files',
+        'app.courses',
+        'app.semesters',
         'app.users',
-        'app.students'
+        'app.files',
+        'app.students',
+        'app.teams'
     ];
 
     /**

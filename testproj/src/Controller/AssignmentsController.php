@@ -22,9 +22,13 @@ class AssignmentsController extends AppController
             case 'download':
             case 'checkUploadFile':
             case 'saveUploadFile':
+            case 'index':
+            case 'submit':
+            case 'recover':
+            case 'delete':
+
                 return true;
                 break;
-            case 'index':
             case 'add':
             case 'edit':
             case 'delete':
@@ -46,6 +50,8 @@ class AssignmentsController extends AppController
         $this->loadModel('Files');
         $this->loadModel('Submissions');
         $this->loadModel('Sections');
+        $this->loadModel('Students');
+
     }
 
     /**
@@ -55,11 +61,9 @@ class AssignmentsController extends AppController
      */
     public function index($sectionid = null)
     {
-        //$this->taOnly();
-        $this->paginate = [
-            'contain' => ['Sections']
-        ];
+        $this->paginate = [ 'contain' => ['Sections']];
         $assignments = $this->paginate($this->Assignments);
+
         if($sectionid){
             $assignments = $this->paginate(
                 $this->Assignments->find()
@@ -101,13 +105,90 @@ class AssignmentsController extends AppController
     }
 
 
-    public function assignment($id = null, $file = null)
+    public function assignment($id = null, $showdeleted = 0)
     {
-        $session = $this->request->session();
+       // $session = $this->request->session();
         if($id != null)
         {
+
+            $student = $this->Students->find('all', [
+                'conditions' => ['user_id' => $this->Auth->user('id')]
+            ])->first();
+
+             $assignment = $this->Assignments->get($id, [
+                'contain' => []
+             ]);
+
+
+             if($showdeleted==1)
+             { 
+                //echo Time::now();
+                $onedayago = Time::now()->subHours(28);
+                //echo $onedayago;
+
+                $submissions = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'assignment_id' => $id ,
+                                    'team_id' => $student->team_id ,
+                                    'OR' => [ 'is_deleted' => 0
+                                     , 
+                                    'deletion_date is NULL  or  deletion_date > ' => $onedayago ] ,
+                                    
+                                    
+                                ],
+                'contain' => ['Files']
+                ]);
+            }
+            else
+            $submissions = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'assignment_id' => $id ,
+                                    'team_id' => $student->team_id ,
+                                    'is_deleted' => 0
+                                ],
+                'contain' => ['Files']
+                ]);
+
+             //print_r(compact('submissions'));
+           //  $files = $this->Assignments->Submissions->find('list', ['limit' => 200]);
+
+
+            $assignment = $this->Assignments->get($id, 
+              ['contain' => 
+               ['Sections', 
+               'Sections.Semesters', 
+               'Sections.Courses']]);
+            $this->set('section', $assignment->section);
+
+
+         
+            $this->set(compact('assignment'));
+            $this->set('_serialize', ['assignment']);
+            
+            $this->set(compact('submissions' , 'files'));
+            $this->set('_serialize', ['submissions']);
+
+            $this->set(compact('file'));
+            $this->set('_serialize', ['user']);
+            $this->set('showdeleted' , $showdeleted);
+
+
+        }
+
+    }
+
+    public function submit($id =null , $file = null)
+    {
+       // $session = $this->request->session();
+        if($id != null)
+        {
+
             $file = $this->Files->newEntity();
             $submission = $this->Submissions->newEntity();
+
+            $student = $this->Students->find('all', [
+                'conditions' => ['user_id' => $this->Auth->user('id')]
+            ])->first();
 
             if ($this->request->is('post'))
             {
@@ -115,22 +196,25 @@ class AssignmentsController extends AppController
                 //file submission form post action.
                 if($this->checkUploadFile($this->request->data['submission_file'])){
                     
-                    $file->name = $this->request->data['name'] ;
+                    $file->name           = $this->request->data['name'] ;
                     $file->version_number = $this->request->data['version_number'] . " " ;
-                    $file->user_id =$session->read('current_student')['user_id'];
-                    $file->upload_date = Time::now();
+                    $file->user_id        = $student->user_id;
+                    $file->upload_date    = Time::now();
+                    $file->size_bytes     = $this->request->data['submission_file']['size'];
+                    $file->checksum       = md5_file($this->request->data['submission_file']['tmp_name']);
+                    $file->ip_address     = $this->get_client_ip();
 
                     if ($this->Files->save($file)) {
 
                         $submission->assignment_id = $id;
-                        $submission->team_id = $session->read('current_student')['team_id'];
+                        $submission->team_id = $student->team_id;
                         $submission->file_id = $file->id;
 
 
 
                         if ($this->Submissions->save($submission)) {     
 
-                            $file_name = time() . $session->read('current_student')['user_id'] . $session->id();
+                            $file_name = time() . $student->user_id . $this->request->session()->id();
                             //moving uploaded file.
                             $ext = $this->saveUploadFile($this->request->data['submission_file'], $file_name); 
                             //updating filename
@@ -151,44 +235,50 @@ class AssignmentsController extends AppController
                         $this->Flash->error(__('The File could not be saved. Please, try again.'));
                     }
                 }
-
-
             }
-             $assignment = $this->Assignments->get($id, [
-                'contain' => []
-             ]);
 
-
-             $submissions = $this->Submissions->find('all', [
-                'conditions' => [
-                                    'assignment_id' => $id ,
-                                    'team_id' => $session->read('current_student')['team_id'] ,
-                                ],
-                'contain' => ['Files']
-                ]);
-
-             //print_r(compact('submissions'));
-             $files = $this->Assignments->Submissions->find('list', ['limit' => 200]);
-         
-            $this->set(compact('assignment'));
-            $this->set('_serialize', ['assignment']);
-            
-            $this->set(compact('submissions' , 'files'));
-            $this->set('_serialize', ['submissions']);
 
             $this->set(compact('file'));
             $this->set('_serialize', ['user']);
+            
+            $assignment = $this->Assignments->get($id, 
+              ['contain' => 
+               ['Sections', 
+               'Sections.Semesters', 
+               'Sections.Courses']]);
+            $this->set('section', $assignment->section);
 
         }
-
     }
 
+    public function recover($id =null,$assignment=null)
+    {
+        $submission = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'file_id' => $id ,
+                                    'is_deleted' => 1
+                                ],
+                'contain' => ['Files']
+                ])->first();
+        if($submission != null )
+        {
+            $this->Flash->success(__('The file has been recovered.'));  
+            $submission->is_deleted = 0;
+            $submission->deletion_date = null;
 
-    public function download($fileName,$submissionName) {
+            $this->Submissions->save($submission);
+
+            return $this->redirect(['action' => 'assignment' , $assignment,1 ] );
+        }
+        $this->Flash->error(__('Nothing was recovered'));
+        return $this->redirect(['action' => 'assignment' , $assignment,0 ] );
+    }
+
+    public function download($fileName) {
         $path = WWW_ROOT . '/file_uploads//' . $fileName;
         $this->response->file($path, array(
             'download' => true,
-            'name' => $submissionName,
+            'name' => $fileName,
         ));
         return $this->response;
     }
@@ -252,18 +342,37 @@ class AssignmentsController extends AppController
      * @return \Cake\Network\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($id = null , $assignment =null)
     {
-        //$this->taOnly();
-        $this->request->allowMethod(['post', 'delete']);
-        $assignment = $this->Assignments->get($id);
-        if ($this->Assignments->delete($assignment)) {
-            $this->Flash->success(__('The assignment has been deleted.'));
-        } else {
-            $this->Flash->error(__('The assignment could not be deleted. Please, try again.'));
-        }
+        // $this->request->allowMethod(['post', 'delete']);
+        // $assignment = $this->Assignments->get($id);
+        // if ($this->Assignments->delete($assignment)) {
+        //     $this->Flash->success(__('The assignment has been deleted.'));
+        // } else {
+        //     $this->Flash->error(__('The assignment could not be deleted. Please, try again.'));
+        // }
 
-        return $this->redirect(['action' => 'index']);
+        // return $this->redirect(['action' => 'index']);
+
+        $submission = $this->Submissions->find('all', [
+                        'conditions' => [
+                                            'file_id' => $id ,
+                                            'is_deleted' => 0
+                                        ],
+                        'contain' => ['Files']
+                        ])->first();
+                if($submission != null )
+                {
+                    $this->Flash->success(__('The file has been deleted.'));  
+                    $submission->is_deleted = 1;
+                    $submission->deletion_date = Time::now()->subHours(4);
+                    $this->Submissions->save($submission);
+
+                    return $this->redirect(['action' => 'assignment' , $assignment,1 ] );
+                }
+                $this->Flash->error(__('Nothing was deleted'));
+                return $this->redirect(['action' => 'assignment' , $assignment,0 ] );
+
     }
 
 
@@ -311,6 +420,8 @@ class AssignmentsController extends AppController
                     'pdf' => 'application/pdf',
                     'doc' => 'application/msword',
                     'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'docx' => 'application/zip',
+
                 ),
                 true
             )) {
@@ -330,6 +441,8 @@ class AssignmentsController extends AppController
                     'pdf' => 'application/pdf',
                     'doc' => 'application/msword',
                     'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'docx' => 'application/zip',
+
                 ),
                 true
             );
@@ -351,11 +464,31 @@ class AssignmentsController extends AppController
             return $ext;
     }
 
-    public function taOnly(){
-        if (!(new User($this->Auth->user()))->isTa()) {
-            $this->redirect(['action' => 'view']);
-        }
-        return;
+    // Function to get the client IP address
+    public function get_client_ip() {
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        else
+            $ipaddress = 'UNKNOWN';
+        return $ipaddress;
     }
+
+    // public function taOnly(){
+    //     if (!(new User($this->Auth->user()))->isTa()) {
+    //         $this->redirect(['action' => 'view']);
+    //     }
+    //     return;
+    // }
 
 }

@@ -116,3 +116,12 @@ table tr td, table tr th{
 .sidebar a{
 	color: inherit;
 }
+
+.submit-file-form form{
+	width:auto;
+	padding:0;
+}
+
+.deleted{
+	color:red;
+}

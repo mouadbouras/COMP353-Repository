@@ -1,13 +1,5 @@
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Assignment'), ['action' => 'add']) ?></li>
-        <!-- <li><?// $this->Html->link(__('List Sections'), ['controller' => 'Sections', 'action' => 'index']) ?></li> -->
-        <!-- <li><?// $this->Html->link(__('New Section'), ['controller' => 'Sections', 'action' => 'add']) ?></li> -->
-<!--         <li><?// $this->Html->link(__('List Submissions'), ['controller' => 'Submissions', 'action' => 'index']) ?></li>
-        <li><?// $this->Html->link(__('New Submission'), ['controller' => 'Submissions', 'action' => 'add']) ?></li> -->
-    </ul>
-</nav>
+<?php $this->extend('/Common/section_view_sidebar'); ?>
+
 <div class="assignments index large-9 medium-8 columns content">
     <h3><?= __('Assignments') ?></h3>
     <table cellpadding="0" cellspacing="0">
@@ -24,7 +16,9 @@
             <?php foreach ($assignments as $assignment): ?>
             <tr>
                 <td><?= $this->Number->format($assignment->id) ?></td>
-                <td><?= h($assignment->name) ?></td>
+                <!-- <td><?// h($assignment->name) ?></td> -->
+                <td><?= $this->Html->link(__($assignment->name), ['action' => 'assignment', $assignment->id])
+                ?></td>
                 <td><?= h($assignment->section->id)//$assignment->has('section') ? $this->Html->link($assignment->section->id, ['controller' => 'Sections', 'action' => 'view', $assignment->section->id]) : '' ?></td>
                 <td><?= h($assignment->due_date) ?></td>
                 <td class="actions">

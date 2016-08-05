@@ -27,7 +27,15 @@
 				['text' => 'View groups', 
 				 'url' => ['controller' => 'Teams', 
 				 		   'action' => 'index',
+				 		   $section->id]],
+				['text' => 'Assignments/Projects', 
+				 'url' => ['controller' => 'Assignments', 
+				 		   'action' => 'index',
 				 		   $section->id]]
+
+
+			
+
 			]];
 	}
 

@@ -64,6 +64,15 @@ class SubmissionsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
+        $validator
+            ->boolean('is_deleted')
+            ->requirePresence('is_deleted', 'create')
+            ->notEmpty('is_deleted');
+
+        $validator
+            ->dateTime('deletion_date')
+            ->allowEmpty('deletion_date');
+
         return $validator;
     }
 

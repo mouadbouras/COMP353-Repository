@@ -10,6 +10,8 @@ use Cake\ORM\Entity;
  * @property int $assignment_id
  * @property int $team_id
  * @property int $file_id
+ * @property bool $is_deleted
+ * @property \Cake\I18n\Time $deletion_date
  *
  * @property \App\Model\Entity\Assignment $assignment
  * @property \App\Model\Entity\Team $team
