@@ -27,13 +27,53 @@
 
             </table>
     <br />
-    <h3><?= __('Submissions') ?></h3>
+
+<h3><?= __('Active Submission') ?></h3>
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
-<!--                 <th><?// h('Assignment') ?></th>
- -->                
-                <!-- <th><?// h('Team') ?></th> -->
+                <th><?= h('File') ?></th>
+                <th><?= h('Checksum') ?></th>
+                <th><?= h('IP Address') ?></th>
+                <th><?= h('Size') ?></th>
+
+
+                <th><?= h('Version') ?></th>
+                <th><?= h('Submission Date') ?></th>
+                <th><?= h('File') ?></th>
+                <th><?= h('Delete/Recover')?></th>
+
+            </tr>
+        </thead>
+        <tbody>
+                <tr <?=  ($active_submission->is_deleted == 0) ? ""  :  "class='deleted'" ; ?> >
+                <td><?= h($active_submission->file->name) ?></td>
+
+                <td><?= h($active_submission->file->checksum) ?></td>
+                <td><?= h($active_submission->file->ip_address) ?></td>
+                <td><?= h($active_submission->file->size_bytes / 1000) . "KB" ?></td>
+
+                <td><?= h($active_submission->file->version_number) ?></td>
+                <td><?= h($active_submission->file->upload_date) ?></td>
+                <td><?= $this->Html->link($active_submission->file->name, ['action' => 'download' , $active_submission->file->file_name ] ); ?></td>
+                <?=  ($active_submission->is_deleted == 0) ? 
+                     "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'delete', $active_submission->file->id, $active_submission->assignment_id], ['confirm' => __('Are you sure you want to delete {0}?', $active_submission->file->name)]) .
+                     "</td>"  
+                     :  
+                     "<td> " . $this->Form->postLink(__('Recover'), 
+                               ['action' => 'recover' , $active_submission->file->id, $active_submission->assignment_id], ['confirm' => __('Are you sure you want to recover {0}?', $active_submission->file->name)]) . "</td>" ; ?>
+
+            </tr>
+
+        </tbody>
+    </table>
+    <br />
+
+
+    <h3><?= __('Submission History') ?></h3>
+    <table cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
                 <th><?= h('File') ?></th>
 
                 <th><?= h('Checksum') ?></th>
@@ -61,13 +101,20 @@
                 <td><?= h($submission->file->version_number) ?></td>
                 <td><?= h($submission->file->upload_date) ?></td>
                 <td><?= $this->Html->link($submission->file->name, ['action' => 'download' , $submission->file->file_name ] ); ?></td>
-                <?=  ($submission->is_deleted == 0) ? 
-                     "<td>" .
-$this->Form->postLink(__('Delete'), ['action' => 'delete', $submission->file->id, $submission->assignment_id], ['confirm' => __('Are you sure you want to delete {0}?', $submission->file->name)]) .
-                     "</td>"  
-                     :  
-                     "<td> " . $this->Form->postLink(__('Recover'), 
-                               ['action' => 'recover' , $submission->file->id, $submission->assignment_id], ['confirm' => __('Are you sure you want to recover {0}?', $submission->file->name)]) . "</td>" ; ?>
+                <?php  
+                    if ($submission->is_deleted == 0) {
+
+                        echo  "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'delete', $submission->file->id, $submission->assignment_id], ['confirm' => __('Are you sure you want to delete {0}?', $submission->file->name)]) . " ";
+
+                        echo ($isLeader == 1) ? $this->Form->postLink(__('Set Active'), 
+                                    ['action' => 'rollback' , $submission->file->id, $submission->assignment_id, $submission->team_id], ['confirm' => __('Are you sure you want to rollback to {0}?', $submission->file->name)]) : "" ;
+                             "</td>"  ;
+
+                    }
+                    else{
+                         echo  "<td> " . $this->Form->postLink(__('Recover'), ['action' => 'recover' , $submission->file->id, $submission->assignment_id], ['confirm' => __('Are you sure you want to recover {0}?', $submission->file->name)]) . "</td>" ; 
+                    }
+                ?> 
 
             </tr>
 

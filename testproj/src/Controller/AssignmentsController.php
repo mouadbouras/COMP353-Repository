@@ -26,6 +26,7 @@ class AssignmentsController extends AppController
             case 'submit':
             case 'recover':
             case 'delete':
+            case 'rollback':
 
                 return true;
                 break;
@@ -51,6 +52,8 @@ class AssignmentsController extends AppController
         $this->loadModel('Submissions');
         $this->loadModel('Sections');
         $this->loadModel('Students');
+        $this->loadModel('Teams');
+
 
     }
 
@@ -115,11 +118,17 @@ class AssignmentsController extends AppController
                 'conditions' => ['user_id' => $this->Auth->user('id')]
             ])->first();
 
-             $assignment = $this->Assignments->get($id, [
-                'contain' => []
-             ]);
 
+            $isLeader = 0 ; 
+             if ($student->team_id) {
+                
+                $teamleader = $this->Teams->get($student->team_id, [
+                'contain' => []]);
 
+                $isLeader  = ($teamleader->leader_user_id == $student->user_id) ? 1 : 0 ;
+            }
+
+             
              if($showdeleted==1)
              { 
                 //echo Time::now();
@@ -136,7 +145,8 @@ class AssignmentsController extends AppController
                                     
                                     
                                 ],
-                'contain' => ['Files']
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
                 ]);
             }
             else
@@ -146,16 +156,36 @@ class AssignmentsController extends AppController
                                     'team_id' => $student->team_id ,
                                     'is_deleted' => 0
                                 ],
-                'contain' => ['Files']
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
                 ]);
 
-             //print_r(compact('submissions'));
-           //  $files = $this->Assignments->Submissions->find('list', ['limit' => 200]);
-
+            $active_submission = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'assignment_id' => $id ,
+                                    'team_id' => $student->team_id ,
+                                    'is_deleted' => 0,
+                                    'is_active' => 1
+                                ],
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
+                ])->first();
+           
+           if($active_submission == null){
+            $active_submission = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'assignment_id' => $id ,
+                                    'team_id' => $student->team_id ,
+                                    'is_deleted' => 0
+                                ],
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
+                ])->first();
+            }
 
             $assignment = $this->Assignments->get($id, 
               ['contain' => 
-               ['Sections', 
+              ['Sections', 
                'Sections.Semesters', 
                'Sections.Courses']]);
             $this->set('section', $assignment->section);
@@ -168,9 +198,13 @@ class AssignmentsController extends AppController
             $this->set(compact('submissions' , 'files'));
             $this->set('_serialize', ['submissions']);
 
+            $this->set(compact('active_submission' , 'files'));
+            $this->set('_serialize', ['active_submission']);
+
             $this->set(compact('file'));
             $this->set('_serialize', ['user']);
             $this->set('showdeleted' , $showdeleted);
+            $this->set('isLeader' , $isLeader);
 
 
         }
@@ -192,7 +226,6 @@ class AssignmentsController extends AppController
 
             if ($this->request->is('post'))
             {
-
                 //file submission form post action.
                 if($this->checkUploadFile($this->request->data['submission_file'])){
                     
@@ -243,7 +276,7 @@ class AssignmentsController extends AppController
             
             $assignment = $this->Assignments->get($id, 
               ['contain' => 
-               ['Sections', 
+              ['Sections', 
                'Sections.Semesters', 
                'Sections.Courses']]);
             $this->set('section', $assignment->section);
@@ -272,6 +305,48 @@ class AssignmentsController extends AppController
         }
         $this->Flash->error(__('Nothing was recovered'));
         return $this->redirect(['action' => 'assignment' , $assignment,0 ] );
+    }
+
+    public function rollback($file =null ,$assignment =null,$team=null)
+    {
+        $submissions = $this->Submissions->find('all', [
+                'conditions' => [   'assignment_id' => $assignment ,
+                                    'team_id' => $team ,
+                                    'is_deleted' => 0,
+                                    'is_active' => 1
+                                ],
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
+                ]);
+
+        foreach( $submissions as $submission){
+            $submission->is_active = 0;
+            $this->Submissions->save($submission);
+        }
+
+
+        if($file != null && $assignment != null )
+        {
+
+            $submission = $this->Submissions->find('all', [
+            'conditions' => [
+                                    'file_id' => $file ,
+                                    'is_deleted' => 0
+                                ],
+                'contain' => ['Files']
+            ])->first();    
+
+            if($submission != null )
+            {
+                $submission->is_active = 1;
+                $this->Submissions->save($submission);
+                $this->Flash->success(__('The file has been rolled back.'));  }
+
+                return $this->redirect(['action' => 'assignment' , $assignment] );
+        }
+        else 
+             $this->Flash->error(__('Nothing was rolledback'));
+        return $this->redirect(['action' => 'assignment' , $assignment] );
     }
 
     public function download($fileName) {
@@ -366,6 +441,8 @@ class AssignmentsController extends AppController
                     $this->Flash->success(__('The file has been deleted.'));  
                     $submission->is_deleted = 1;
                     $submission->deletion_date = Time::now()->subHours(4);
+                    $submission->is_active = 0;
+
                     $this->Submissions->save($submission);
 
                     return $this->redirect(['action' => 'assignment' , $assignment,1 ] );

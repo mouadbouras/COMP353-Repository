@@ -1,20 +1,26 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
 
 <?php 
-    $linkgroups[] = [
-        'title' => 'Team \''.$team->id.'\'',
-        'links' => [
-            ['text' => 'Edit Team', 
-             'url' => ['controller' => 'Teams', 
-                       'action' => 'edit',
-                       $team->id]],
-            ['text' => 'Delete Team', 
-             'url' => ['controller' => 'Teams', 
-                       'action' => 'delete',
-                       $team->id],
-             'other' => ['confirm' => __('Are you sure you want to delete Team {0}?', $team->id)]],
-        ]];
-    $this->set('linkgroups', $linkgroups);
+    if($canEdit):
+        $linkgroups[] = [
+            'title' => 'Team \''.$team->id.'\'',
+            'links' => [
+                ['text' => 'Edit Team', 
+                 'url' => ['controller' => 'Teams', 
+                           'action' => 'edit',
+                           $team->id]],
+                ['text' => 'Delete Team', 
+                 'url' => ['controller' => 'Teams', 
+                           'action' => 'delete',
+                           $team->id],
+                 'other' => ['confirm' => __('Are you sure you want to delete Team {0}?', $team->id)]],
+                ['text' => 'Add a Member', 
+                 'url' => ['controller' => 'Students', 
+                           'action' => 'memberSelect',
+                           $team->id]],
+            ]];
+        $this->set('linkgroups', $linkgroups);
+    endif;
 ?>
 
 <span class='bold'>Course Group</span><br>
@@ -34,6 +40,9 @@
         <th>Last Name</th>
         <th>Email</th>
         <th>Role</th>
+        <?php if($canEdit): ?>
+            <th>Actions</th>
+        <?php endif; ?>
     </tr>
     <?php foreach($students as $student): ?>
         <tr>
@@ -42,6 +51,16 @@
             <td><?= $student->user->last_name ?></td>
             <td><?= $student->user->email ?></td>
             <td><?= ($student->user->id == $team->leader_user_id)?'Leader':'-' ?></td>
+            <?php if($canEdit): ?>
+                <td>
+                    <?= $this->Html->link('Remove from Team',
+                            ['controller' => 'Students', 
+                             'action' => 'clearTeam',
+                             $student->user->id,
+                             $team->section->id],
+                             ['confirm' => __('Are you sure you want to remove \'{0} {1}\' from Team {2}?', $student->user->first_name, $student->user->last_name, $team->id)]) ?>
+                </td>
+            <?php endif; ?>
         </tr>
     <?php endforeach; ?>
 </table>

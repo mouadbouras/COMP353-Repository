@@ -106,7 +106,7 @@ class TeamsController extends AppController
         $this->set('_serialize', ['section']);
 
 
-        $canEdit = $user->isAdmin();
+        $canEdit = $user->isInstructor($team->section_id) || $user->isAdmin();
         $this->set('canEdit', $canEdit);
 
         $isInGroup = $user->getGroup($team->section_id) == $id;
