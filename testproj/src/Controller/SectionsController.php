@@ -12,13 +12,25 @@ use App\Model\Entity\User;
  */
 class SectionsController extends AppController
 {
-    public function isAuthorized(){
-        //index
-        //view
-        //add
-        //edit
-        //delete
-        return true;
+    public function isAuthorized($user = null){
+        $user = new User($user);
+        $action = $this->request->params['action'];
+        $pass = $this->request->params['pass'];
+        switch ($action) {
+            case 'index':
+            case 'add':
+            case 'edit':
+            case 'delete':
+                return $user->isAdmin();
+                break;
+            case 'view':
+                $section = $pass[0];
+                return ($user->isStudent($section) || 
+                        $user->isTA($section) ||
+                        $user->isInstructor($section) ||
+                        $user->isAdmin());
+                break;
+        }
     }
 
     /**
@@ -46,18 +58,12 @@ class SectionsController extends AppController
      */
     public function view($id = null)
     {   
-        $user = new User($this->Auth->user());
+        $section = $this->Sections->get($id, [
+            'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+        ]);
 
-        if($id && ($user->isStudent($id) || $user->isTA($id) || $user->isAdmin())){
-            $section = $this->Sections->get($id, [
-                'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
-            ]);
-
-            $this->set('section', $section);
-            $this->set('_serialize', ['section']);
-        }else{
-            return $this->redirect(['action' => 'index']);
-        }
+        $this->set('section', $section);
+        $this->set('_serialize', ['section']);
     }
 
     /**

@@ -15,19 +15,28 @@ class TeamsController extends AppController
         $user = new User($user);
         $action = $this->request->params['action'];
         $pass = $this->request->params['pass'];
-        $section = $pass[0];
         switch ($action) {
             case 'add':
             case 'delete':
             case 'edit':
-                return ($user->isTA($section) || $user->isAdmin());
+                return ($user->isInstructor($pass[0]) || $user->isAdmin());
                 break;
             case 'index':
-                if($group = $user->getGroup($section)){
-                    return $this->redirect(['action' => 'view', $group]);
+                if(!$user->isAdmin() && ($group = $user->getGroup($pass[0]))){
+                    return $this->redirect(['action' => 'view', $group->id]);
                 }
+                return $user->isInstructor($pass[0]) || 
+                        $user->isAdmin() ;
             case 'view':
-                return ($user->isStudent($section) || $user->isTA($section) || $user->isAdmin());
+                if($this->Teams->exists(
+                        ['id' => $pass[0]])){
+                    $section = $this->Teams->get($pass[0])->section_id;
+                    return 
+                        $user->getGroup($section) == $pass[0] || 
+                        $user->isTA($section) || 
+                        $user->isInstructor($section) || 
+                        $user->isAdmin();
+                }
                 break;
         }
         return false;
@@ -60,6 +69,9 @@ class TeamsController extends AppController
             ]);
         $this->set('section', $section);
         $this->set('_serialize', ['section']);
+
+        $user = new User($this->Auth->user());
+        $this->set('editable', $user->isInstructor($id) || $user->isAdmin());
     }
 
     /**
@@ -135,7 +147,9 @@ class TeamsController extends AppController
     public function edit($id = null)
     {
         $team = $this->Teams->get($id, [
-            'contain' => []
+            'contain' => ['Sections',
+                          'Sections.Courses',
+                          'Sections.Semesters']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $team = $this->Teams->patchEntity($team, $this->request->data);
@@ -151,6 +165,8 @@ class TeamsController extends AppController
         $sections = $this->Teams->Sections->find('list', ['limit' => 200]);
         $this->set(compact('team', 'users', 'sections'));
         $this->set('_serialize', ['team']);
+
+        $this->set('section', $team->section);
     }
 
     /**

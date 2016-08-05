@@ -51,16 +51,6 @@ class User extends Entity
         return (new DefaultPasswordHasher)->hash($password);
     }
 
-    public function isAdmin(){
-        return ($this->permission_level == 4);
-    }
-    public function isTa($sectionid = null){
-        if($sectionid){
-            $sectionsTable = TableRegistry::get('sections');
-            return $sectionsTable->exists(['ta_user_id' => $this->id, 'id' => $sectionid]);
-        }
-        return ($this->permission_level == 3);
-    }
     public function isStudent($sectionid = null){
         if($sectionid){
             $studentsTable = TableRegistry::get('Students');
@@ -68,10 +58,30 @@ class User extends Entity
         }
         return ($this->permission_level == 1 || $this->permission_level == 2);
     }
+    public function isTA($sectionid = null){
+        if($sectionid){
+            $sectionsTable = TableRegistry::get('sections');
+            return $sectionsTable->exists(['ta_user_id' => $this->id, 'id' => $sectionid]);
+        }
+        return ($this->permission_level == 3);
+    }
+    public function isInstructor($sectionid = null){
+        if($sectionid){
+            $sectionsTable = TableRegistry::get('sections');
+            return $sectionsTable->exists(['instructor_user_id' => $this->id, 'id' => $sectionid]);
+        }
+        return ($this->permission_level == 3);
+    }
+    public function isAdmin(){
+        return ($this->permission_level == 4);
+    }
+    
     public function getGroup($sectionid){
         $studentsTable = TableRegistry::get('Students');
-        $students = $studentsTable->find()
-            ->where(['user_id' => $this->id, 'section_id' => $sectionid]);
-        return $students->first()->team_id;
+        $students = $studentsTable->find('all', ['contain' => ['Teams']])
+            ->where(['user_id' => $this->id, 'Students.section_id' => $sectionid]);
+        if($student = $students->first()){
+            return $student->team;
+        }
     }
 }

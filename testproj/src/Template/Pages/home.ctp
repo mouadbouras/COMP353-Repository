@@ -22,6 +22,15 @@
                         $semestersTable = TableRegistry::get('Semesters');
                         return $semestersTable->selectCurrentSemesters($query);
                     }]);
+
+    //instructor in
+    $instructorInfos = $sectionsTable->find()
+        ->where(['instructor_user_id' => $user->id])
+        ->contain(['Courses', 
+                   'Semesters' => function(\Cake\ORM\Query $query){
+                        $semestersTable = TableRegistry::get('Semesters');
+                        return $semestersTable->selectCurrentSemesters($query);
+                    }]);
 ?>
 
 <div id='courses'>
@@ -51,6 +60,17 @@
             <?php foreach ($taInfos as $taInfo) { ?>
                 <div class='d-block'>
                 <?= $this->Html->link($taInfo->course->name.' \ '.$taInfo->id, ['controller' => 'Sections', 'action' => 'view', $taInfo->id], ['class' => 'd-inline']); ?>
+                </div>
+            <?php } ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if($instructorInfos->count()): ?>
+        <div class='role-group'>
+            You are currently an INSTRUCTOR for the following sections:
+            <?php foreach ($instructorInfos as $instructorInfo) { ?>
+                <div class='d-block'>
+                <?= $this->Html->link($instructorInfo->course->name.' \ '.$instructorInfo->id, ['controller' => 'Sections', 'action' => 'view', $instructorInfo->id], ['class' => 'd-inline']); ?>
                 </div>
             <?php } ?>
         </div>

@@ -10,6 +10,7 @@ use Cake\ORM\Entity;
  * @property int $course_id
  * @property int $semester_id
  * @property int $ta_user_id
+ * @property int $instructor_user_id
  *
  * @property \App\Model\Entity\Course $course
  * @property \App\Model\Entity\Semester $semester

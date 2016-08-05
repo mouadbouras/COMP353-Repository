@@ -14,6 +14,7 @@
         </thead>
         <tbody>
             <?php foreach ($sections as $section): ?>
+                <?= $section ?><br><br>
             <tr>
                 <td><?= $this->Number->format($section->id) ?></td>
                 <td><?= $section->has('course') ? $this->Html->link($section->course->name, ['controller' => 'Courses', 'action' => 'view', $section->course->id]) : '' ?></td>

@@ -12,6 +12,7 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\BelongsTo $Courses
  * @property \Cake\ORM\Association\BelongsTo $Semesters
  * @property \Cake\ORM\Association\BelongsTo $Users
+ * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\HasMany $Assignments
  * @property \Cake\ORM\Association\HasMany $Students
  * @property \Cake\ORM\Association\HasMany $Teams
@@ -52,6 +53,9 @@ class SectionsTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'ta_user_id'
         ]);
+        // $this->belongsTo('Users', [
+        //     'foreignKey' => 'instructor_user_id'
+        // ]);
         $this->hasMany('Assignments', [
             'foreignKey' => 'section_id'
         ]);
@@ -90,6 +94,7 @@ class SectionsTable extends Table
         $rules->add($rules->existsIn(['course_id'], 'Courses'));
         $rules->add($rules->existsIn(['semester_id'], 'Semesters'));
         $rules->add($rules->existsIn(['ta_user_id'], 'Users'));
+        $rules->add($rules->existsIn(['instructor_user_id'], 'Users'));
 
         return $rules;
     }
