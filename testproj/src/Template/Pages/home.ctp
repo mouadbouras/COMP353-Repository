@@ -55,7 +55,7 @@
             You are currently a STUDENT in the following sections:
             <?php foreach ($studentInfos as $studentInfo) { ?>
                 <div class='d-block'>
-                <?= $this->Html->link($studentInfo->section->course->name.' \ '.$studentInfo->section->id, ['controller' => 'Sections', 'action' => 'view', $studentInfo->section->id], ['class' => 'd-inline']); ?>
+                <?= $this->Html->link(h($studentInfo->section->course->name).' \ '.h($studentInfo->section->id), ['controller' => 'Sections', 'action' => 'view', $studentInfo->section->id], ['class' => 'd-inline']); ?>
                 </div>
             <?php } ?>
         </div>
@@ -66,7 +66,7 @@
             You are currently a TA for the following sections:
             <?php foreach ($taInfos as $taInfo) { ?>
                 <div class='d-block'>
-                <?= $this->Html->link($taInfo->course->name.' \ '.$taInfo->id, ['controller' => 'Sections', 'action' => 'view', $taInfo->id], ['class' => 'd-inline']); ?>
+                <?= $this->Html->link(h($taInfo->course->name).' \ '.h($taInfo->id), ['controller' => 'Sections', 'action' => 'view', $taInfo->id], ['class' => 'd-inline']); ?>
                 </div>
             <?php } ?>
         </div>
@@ -77,7 +77,7 @@
             You are currently an INSTRUCTOR for the following sections:
             <?php foreach ($instructorInfos as $instructorInfo) { ?>
                 <div class='d-block'>
-                <?= $this->Html->link($instructorInfo->course->name.' \ '.$instructorInfo->id, ['controller' => 'Sections', 'action' => 'view', $instructorInfo->id], ['class' => 'd-inline']); ?>
+                <?= $this->Html->link(h($instructorInfo->course->name).' \ '.h($instructorInfo->id), ['controller' => 'Sections', 'action' => 'view', $instructorInfo->id], ['class' => 'd-inline']); ?>
                 </div>
             <?php } ?>
         </div>

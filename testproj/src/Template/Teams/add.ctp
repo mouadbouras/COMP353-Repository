@@ -1,6 +1,7 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
 
 <div class="teams form large-9 medium-8 columns content custom-form">
+
     <?= $this->Form->create($team) ?>
     <fieldset>
         <legend><?= __('Are you sure you want to add a team to section ' . $section->id . '?') ?></legend>

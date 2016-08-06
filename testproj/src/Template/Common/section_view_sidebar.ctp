@@ -2,6 +2,7 @@
 <?php 
 	$this->set('sidebar_title', $section->course->name.' \ Section '.$section->id.'<br>'.$section->semester->name); 
 
+
 	$linkgroups;
 	if($user->isStudent($section->id)){
 		$groupurl = ['controller' => 'Teams', 

@@ -12,8 +12,6 @@
  * @since         0.10.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-$cakeDescription = 'CrsMgr - The Course Manager System';
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,7 +19,7 @@ $cakeDescription = 'CrsMgr - The Course Manager System';
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>
-        <?= $cakeDescription ?>:
+        CrsMgr - The Course Manager System:
         <?= $this->fetch('title') ?>
     </title>
     <?= $this->Html->meta('icon') ?>

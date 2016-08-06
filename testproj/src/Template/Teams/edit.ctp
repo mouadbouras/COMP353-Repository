@@ -2,7 +2,7 @@
 
 <?php 
     $linkgroups[] = [
-        'title' => 'Team \''.$team->id.'\'',
+        'title' => 'Team \''.h($team->id).'\'',
         'links' => [
             ['text' => 'View Team', 
              'url' => ['controller' => 'Teams', 
@@ -17,7 +17,6 @@
     $this->set('linkgroups', $linkgroups);
 ?>
 
-
     <div class="teams form large-9 medium-8 columns content custom-form">
 
         <?= $this->Form->create($team) ?>
@@ -31,3 +30,4 @@
         <?= $this->Form->button(__('Submit')) ?>
         <?= $this->Form->end() ?>
     </div>
+
