@@ -16,7 +16,12 @@
 			'title' => 'Student',
 			'links' => [
 				['text' => 'Course Group', 
-				 'url' => $groupurl]
+				 'url' => $groupurl],
+				['text' => 'Assignments/Projects', 
+				 'url' => ['controller' => 'Assignments', 
+				 		   'action' => 'index',
+				 		   $section->id]]
+
 			]];
 	}
 
