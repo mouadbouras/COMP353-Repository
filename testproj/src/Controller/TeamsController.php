@@ -118,23 +118,34 @@ class TeamsController extends AppController
      *
      * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($sectionid=null)
     {
-        $team = $this->Teams->newEntity();
-        if ($this->request->is('post')) {
-            $team = $this->Teams->patchEntity($team, $this->request->data);
-            if ($this->Teams->save($team)) {
-                $this->Flash->success(__('The team has been saved.'));
+        if($sectionid!=null)
+        {
+            $team = $this->Teams->newEntity();
+            if ($this->request->is('post')) {
+                $team->section_id = $sectionid;
+                $team->leader_user_id = null;
+                $team = $this->Teams->patchEntity($team, $this->request->data);
+                if ($this->Teams->save($team)) {
+                    $this->Flash->success(__('The team has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            } else {
-                $this->Flash->error(__('The team could not be saved. Please, try again.'));
+                    return $this->redirect(['action' => 'index' , $sectionid]);
+                } else {
+                    $this->Flash->error(__('The team could not be saved. Please, try again.'));
+                }
             }
+            
+            $section = $this->Sections->get($sectionid, [
+            'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+            ]);
+            $this->set('section', $section);
+            $this->set(compact('team', 'users', 'section'));
+            $this->set('_serialize', ['team']);
+        
+            $this->set(compact('students'));
         }
-        $users = $this->Teams->Users->find('list', ['limit' => 200]);
-        $sections = $this->Teams->Sections->find('list', ['limit' => 200]);
-        $this->set(compact('team', 'users', 'sections'));
-        $this->set('_serialize', ['team']);
+
     }
 
     /**

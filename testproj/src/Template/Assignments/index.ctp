@@ -44,10 +44,7 @@
             <?php endforeach; ?>
             <?php if($currentuser->isTA($section->id) == 1 or $currentuser->isInstructor($section->id) == 1 ){ ?>
             <tr>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
                 <td><?= $this->Html->link(__('Add'), ['action' => 'Add', $section->id]) ?></td>
             </tr>
 

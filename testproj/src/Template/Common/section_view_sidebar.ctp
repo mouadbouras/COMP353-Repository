@@ -1,6 +1,6 @@
 <?php $this->extend('/Common/sidebar'); ?>
 <?php 
-	$this->set('sidebar_title', $section->course->name.' \ '.$section->id.'<br>'.$section->semester->name); 
+	$this->set('sidebar_title', $section->course->name.' \ Section '.$section->id.'<br>'.$section->semester->name); 
 
 	$linkgroups;
 	if($user->isStudent($section->id)){
@@ -17,7 +17,7 @@
 			'links' => [
 				['text' => 'Course Group', 
 				 'url' => $groupurl],
-				['text' => 'Assignments/Projects', 
+				['text' => 'Assignments', 
 				 'url' => ['controller' => 'Assignments', 
 				 		   'action' => 'index',
 				 		   $section->id]]
@@ -33,9 +33,17 @@
 				 'url' => ['controller' => 'Teams', 
 				 		   'action' => 'index',
 				 		   $section->id]],
-				['text' => 'Assignments/Projects', 
+				['text' => 'Add group', 
+				 'url' => ['controller' => 'Teams', 
+				 		   'action' => 'add',
+				 		   $section->id]],
+				['text' => 'View Assignments', 
 				 'url' => ['controller' => 'Assignments', 
 				 		   'action' => 'index',
+				 		   $section->id]],
+				['text' => 'Add Assignment', 
+				 'url' => ['controller' => 'Assignments', 
+				 		   'action' => 'Add',
 				 		   $section->id]]
 
 
@@ -68,8 +76,13 @@
 				['text' => 'Manage Groups', 
 				 'url' => ['controller' => 'Teams', 
 				 		   'action' => 'index',
+				 		   	$section->id],
+				['text' => 'Add a group', 
+				 'url' => ['controller' => 'Teams', 
+				 		   'action' => 'add',
 				 		   	$section->id]]
-			]];
+
+			]]];
 	}
 
 	$this->set('linkgroups', $linkgroups);

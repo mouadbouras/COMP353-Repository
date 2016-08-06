@@ -19,7 +19,7 @@
                        'action' => 'index']],
             ['text' => 'Create a Section', 
              'url' => ['controller' => 'Sections', 
-                       'action' => 'index']]
+                       'action' => 'add']]
         ]];
 
     $this->set('linkgroups', $linkgroups);

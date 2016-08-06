@@ -116,19 +116,20 @@ table tr td, table tr th{
 .sidebar a{
 	color: inherit;
 }
-.submit-file-form{
+.custom-form{
 	text-align:left;
 }
-.submit-file-form form{
+.custom-form form{
 	float:left;
 	margin:auto;
 	width:auto;
 	padding:0;
+	min-width:300px;
+
 
 }
-
-.submit-file-form form input{
-	max-width:390px;
+.custom-form form input{
+	max-width:380px;
 }
 
 .deleted{
