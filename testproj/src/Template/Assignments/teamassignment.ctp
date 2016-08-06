@@ -96,7 +96,7 @@
 
                     <td><?= h($submission->file->version_number) ?></td>
                     <td><?= h($submission->file->upload_date) ?></td>
-                    <td><?= $this->Html->link($submission->file->name, ['action' => 'download' , $submission->file->file_name ] ); ?></td>
+                    <td><?= $this->Html->link(h($submission->file->name), ['action' => 'download' , $submission->file->file_name ] ); ?></td>
                 </tr>
 
                 <?php endforeach;  ?>

@@ -2,7 +2,7 @@
 
 <?php 
     $linkgroups[] = [
-        'title' => 'Team \''.$team->id.'\'',
+        'title' => 'Team \''.h($team->id).'\'',
         'links' => [
             ['text' => 'View Team', 
              'url' => ['controller' => 'Teams', 
@@ -19,7 +19,7 @@
 
     <?= $this->Form->create($team) ?>
     <fieldset>
-        <legend><?= __('Edit Team '.$team->id) ?></legend>
+        <legend><?= __('Edit Team '.h($team->id)) ?></legend>
         <?php
             echo $this->Form->input('leader_user_id', ['options' => $users, 'empty' => true]);
             #echo $this->Form->input('section_id', ['options' => $sections, 'empty' => true]);

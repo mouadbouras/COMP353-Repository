@@ -1,6 +1,6 @@
 <?php $this->extend('/Common/sidebar'); ?>
 <?php 
-	$this->set('sidebar_title', $section->course->name.' \ '.$section->id.'<br>'.$section->semester->name); 
+	$this->set('sidebar_title', h($section->course->name).' \ '.h($section->id).'<br>'.h($section->semester->name)); 
 
 	$linkgroups;
 	if($user->isStudent($section->id)){

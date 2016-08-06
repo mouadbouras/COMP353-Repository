@@ -11,7 +11,7 @@
             </tr>
             <?php foreach ($teams as $team): ?>
             <tr>
-                <td><?= $this->Html->link('Team '.$team->id, ['action' => 'view', $team->id]) ?></td>
+                <td><?= $this->Html->link('Team '.h($team->id), ['action' => 'view', $team->id]) ?></td>
                 <?php if($editable): ?>
                     <td>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $team->id]) ?>

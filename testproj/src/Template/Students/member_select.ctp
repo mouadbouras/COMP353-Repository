@@ -13,11 +13,11 @@
     </tr>
 <?php foreach($students as $student): ?>
     <tr>
-        <td><?= $student->user->id ?></td>
-        <td><?= $student->user->first_name ?></td>
-        <td><?= $student->user->last_name ?></td>
-        <td><?= $student->user->email ?></td>
-        <td><?= $this->Html->link('Add to Team 5', 
+        <td><?= h($student->user->id) ?></td>
+        <td><?= h($student->user->first_name) ?></td>
+        <td><?= h($student->user->last_name) ?></td>
+        <td><?= h($student->user->email) ?></td>
+        <td><?= $this->Html->link('Add to Team '.h($team->id), 
                     ['action' => 'setTeam', $team->id, $student->user->id]) ?></td>
     </tr>
 <?php endforeach ?>
