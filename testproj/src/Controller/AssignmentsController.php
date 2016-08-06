@@ -25,20 +25,22 @@ class AssignmentsController extends AppController
             case 'index':
             case 'submit':
             case 'recover':
-            case 'delete':
+            case 'deletefile':
             case 'rollback':
-
                 return true;
                 break;
             case 'add':
             case 'edit':
             case 'delete':
+            case 'teamassignment':
+
                 //can see - for section if TA for section
                 //can see all - if admin?
-                if($pass){
-                    return $user->isTA($pass[0]);
-                }else{
-                    return $user->isAdmin();
+                if($pass && $user->isTA($pass[0])==true){
+                    return true;
+                }
+                else if ($user->isAdmin()==true){
+                    return true;
                 }
                 break;
         }
@@ -48,6 +50,7 @@ class AssignmentsController extends AppController
     public function initialize()
     {
         parent::initialize();
+        $this->loadModel('Users');
         $this->loadModel('Files');
         $this->loadModel('Submissions');
         $this->loadModel('Sections');
@@ -64,6 +67,14 @@ class AssignmentsController extends AppController
      */
     public function index($sectionid = null)
     {
+        if($sectionid==null ){
+            $student = $this->Students->find('all', [
+                'conditions' => ['user_id' => $this->Auth->user('id')]
+            ])->first();
+
+            $sectionid = $student->section_id;
+        }
+
         $this->paginate = [ 'contain' => ['Sections']];
         $assignments = $this->paginate($this->Assignments);
 
@@ -81,6 +92,13 @@ class AssignmentsController extends AppController
             'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
         ]);
         $this->set('section', $section);
+
+        $currentuser = $this->Users->get($this->Auth->user('id'),[]);
+
+        $this->set(compact('currentuser') );
+        $this->set('_serialize', ['currentuser']);
+
+
     }
 
     /**
@@ -113,7 +131,6 @@ class AssignmentsController extends AppController
        // $session = $this->request->session();
         if($id != null)
         {
-
             $student = $this->Students->find('all', [
                 'conditions' => ['user_id' => $this->Auth->user('id')]
             ])->first();
@@ -129,59 +146,9 @@ class AssignmentsController extends AppController
             }
 
              
-             if($showdeleted==1)
-             { 
-                //echo Time::now();
-                $onedayago = Time::now()->subHours(28);
-                //echo $onedayago;
+            $submissions = $this->getSubmissionHistory($id,$student->team_id,$showdeleted);
 
-                $submissions = $this->Submissions->find('all', [
-                'conditions' => [
-                                    'assignment_id' => $id ,
-                                    'team_id' => $student->team_id ,
-                                    'OR' => [ 'is_deleted' => 0
-                                     , 
-                                    'deletion_date is NULL  or  deletion_date > ' => $onedayago ] ,
-                                    
-                                    
-                                ],
-                'contain' => ['Files'],
-                'order' => ['Files.version_number' => 'DESC']
-                ]);
-            }
-            else
-            $submissions = $this->Submissions->find('all', [
-                'conditions' => [
-                                    'assignment_id' => $id ,
-                                    'team_id' => $student->team_id ,
-                                    'is_deleted' => 0
-                                ],
-                'contain' => ['Files'],
-                'order' => ['Files.version_number' => 'DESC']
-                ]);
-
-            $active_submission = $this->Submissions->find('all', [
-                'conditions' => [
-                                    'assignment_id' => $id ,
-                                    'team_id' => $student->team_id ,
-                                    'is_deleted' => 0,
-                                    'is_active' => 1
-                                ],
-                'contain' => ['Files'],
-                'order' => ['Files.version_number' => 'DESC']
-                ])->first();
-           
-           if($active_submission == null){
-            $active_submission = $this->Submissions->find('all', [
-                'conditions' => [
-                                    'assignment_id' => $id ,
-                                    'team_id' => $student->team_id ,
-                                    'is_deleted' => 0
-                                ],
-                'contain' => ['Files'],
-                'order' => ['Files.version_number' => 'DESC']
-                ])->first();
-            }
+            $active_submission = $this->getactivesubmission($id,$student->team_id );
 
             $assignment = $this->Assignments->get($id, 
               ['contain' => 
@@ -207,9 +174,116 @@ class AssignmentsController extends AppController
             $this->set('isLeader' , $isLeader);
 
 
+
+        }
+    }
+    private function getSubmissionHistory($assignmentid, $teamid, $showdeleted)
+    {
+             if($showdeleted==1)
+             { 
+                //echo Time::now();
+                $onedayago = Time::now()->subHours(28);
+                //echo $onedayago;
+
+                $submissions = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'assignment_id' => $assignmentid ,
+                                    'team_id' => $teamid ,
+                                    'OR' => [ 'is_deleted' => 0
+                                     , 
+                                    'deletion_date is NULL  or  deletion_date > ' => $onedayago ] ,
+                                    
+                                    
+                                ],
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
+                ]);
+            }
+            else
+            $submissions = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'assignment_id' => $assignmentid ,
+                                    'team_id' => $teamid ,
+                                    'is_deleted' => 0
+                                ],
+                'contain' => ['Files'],
+                'order' => ['Files.version_number' => 'DESC']
+                ]);
+
+        return $submissions;
+    }
+
+    private function getActiveSubmission($assignmentid,$teamid){
+
+        $active_submission = $this->Submissions->find('all', [
+            'conditions' => [
+                                'assignment_id' => $assignmentid ,
+                                'team_id' => $teamid,
+                                'is_deleted' => 0,
+                                'is_active' => 1
+                            ],
+            'contain' => ['Files'],
+            'order' => ['Files.version_number' => 'DESC']
+            ])->first();
+       
+       if($active_submission == null){
+        $active_submission = $this->Submissions->find('all', [
+            'conditions' => [
+                                'assignment_id' => $assignmentid ,
+                                'team_id' => $teamid ,
+                                'is_deleted' => 0
+                            ],
+            'contain' => ['Files'],
+            'order' => ['Files.version_number' => 'DESC']
+            ])->first();
+        }    
+        return $active_submission;
+    }
+
+    public function teamassignment($sectionid=null,$assignmentid = null, $teamid = null)
+    {
+        if($assignmentid!=null)
+        {
+            $teams = $this->Teams->find('all', [
+                'conditions' => ['section_id' => $sectionid
+            ]]);
+
+            $this->set(compact('teams' ));
+            $this->set('_serialize', ['teams']);
         }
 
-    }
+        if($sectionid!=null && $assignmentid != null && $teamid != null)
+        {
+
+            $assignment = $this->Assignments->get($assignmentid, 
+              []);
+            $this->set(compact('assignment'));
+            $this->set('_serialize', ['assignment']);
+
+             
+            $submissions = $this->getSubmissionHistory($assignmentid,$teamid,1);
+            
+            $this->set(compact('submissions' , 'files'));
+            $this->set('_serialize', ['submissions']);  
+
+            $active_submission = $this->getactivesubmission($assignmentid,$teamid);
+
+            $this->set(compact('active_submission' , 'files'));
+            $this->set('_serialize', ['active_submission']);
+
+
+        }
+
+
+
+            $section = $this->Sections->get($sectionid, [
+                'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+            ]);
+            $this->set('section', $section);
+            $this->set('sectionid', $sectionid);
+            $this->set('assignmentid', $assignmentid);
+            $this->set('teamid', $teamid);
+    }    
 
     public function submit($id =null , $file = null)
     {
@@ -363,23 +437,33 @@ class AssignmentsController extends AppController
      *
      * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($sectionid = null)
     {
         //$this->taOnly();
-        $assignment = $this->Assignments->newEntity();
-        if ($this->request->is('post')) {
-            $assignment = $this->Assignments->patchEntity($assignment, $this->request->data);
-            if ($this->Assignments->save($assignment)) {
-                $this->Flash->success(__('The assignment has been saved.'));
+        if($sectionid != null)
+        {
+            $assignment = $this->Assignments->newEntity();
+            if ($this->request->is('post')) {
+                $assignment = $this->Assignments->patchEntity($assignment, $this->request->data);
+                    $assignment->section_id = $sectionid;
 
-                return $this->redirect(['action' => 'index']);
-            } else {
-                $this->Flash->error(__('The assignment could not be saved. Please, try again.'));
+                if ($this->Assignments->save($assignment)) {
+                    $this->Flash->success(__('The assignment has been saved.'));
+
+                    return $this->redirect(['action' => 'index',$sectionid]);
+                } else {
+                    $this->Flash->error(__('The assignment could not be saved. Please, try again.'));
+                }
             }
+            $sections = $this->Assignments->Sections->find('list', ['limit' => 200]);
+            $this->set(compact('assignment', 'sections'));
+            $this->set('_serialize', ['assignment']);
+                
+            $section = $this->Sections->get($sectionid, [
+                'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+            ]);
+            $this->set('section', $section);
         }
-        $sections = $this->Assignments->Sections->find('list', ['limit' => 200]);
-        $this->set(compact('assignment', 'sections'));
-        $this->set('_serialize', ['assignment']);
     }
 
     /**
@@ -389,7 +473,7 @@ class AssignmentsController extends AppController
      * @return \Cake\Network\Response|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id = null, $sectionid=null)
     {
         //$this->taOnly();
         $assignment = $this->Assignments->get($id, [
@@ -400,16 +484,35 @@ class AssignmentsController extends AppController
             if ($this->Assignments->save($assignment)) {
                 $this->Flash->success(__('The assignment has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'index' , $sectionid]);
             } else {
                 $this->Flash->error(__('The assignment could not be saved. Please, try again.'));
             }
         }
         $sections = $this->Assignments->Sections->find('list', ['limit' => 200]);
+
+        $section = $this->Sections->get($sectionid, [
+            'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+        ]);
+        $this->set('section', $section);
+
         $this->set(compact('assignment', 'sections'));
         $this->set('_serialize', ['assignment']);
     }
 
+    public function delete($id = null )
+    {
+
+            // $this->request->allowMethod(['post', 'delete']);
+            // $assignment = $this->Assignments->get($id);
+            // if ($this->Assignments->delete($assignment)) {
+            //     $this->Flash->success(__('The assignment has been deleted.'));
+            // } else {
+            //     $this->Flash->error(__('The assignment could not be deleted. Please, try again.'));
+            // }
+
+            // return $this->redirect(['action' => 'index']);
+    }
     /**
      * Delete method
      *
@@ -417,17 +520,8 @@ class AssignmentsController extends AppController
      * @return \Cake\Network\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null , $assignment =null)
+    public function deletefile($id = null , $assignment =null)
     {
-        // $this->request->allowMethod(['post', 'delete']);
-        // $assignment = $this->Assignments->get($id);
-        // if ($this->Assignments->delete($assignment)) {
-        //     $this->Flash->success(__('The assignment has been deleted.'));
-        // } else {
-        //     $this->Flash->error(__('The assignment could not be deleted. Please, try again.'));
-        // }
-
-        // return $this->redirect(['action' => 'index']);
 
         $submission = $this->Submissions->find('all', [
                         'conditions' => [
@@ -561,11 +655,6 @@ class AssignmentsController extends AppController
         return $ipaddress;
     }
 
-    // public function taOnly(){
-    //     if (!(new User($this->Auth->user()))->isTa()) {
-    //         $this->redirect(['action' => 'view']);
-    //     }
-    //     return;
-    // }
+
 
 }
