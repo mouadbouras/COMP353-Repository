@@ -67,12 +67,15 @@ class AssignmentsController extends AppController
      */
     public function index($sectionid = null)
     {
-        if($sectionid==null ){
-            $student = $this->Students->find('all', [
+        $student = $this->Students->find('all', [
                 'conditions' => ['user_id' => $this->Auth->user('id')]
             ])->first();
 
+        if($student != null)
+        {
             $sectionid = $student->section_id;
+            if($student->team_id == null)
+            $this->Flash->error(__('You must be part of a team to view your assignments')); 
         }
 
         $this->paginate = [ 'contain' => ['Sections']];
@@ -88,13 +91,22 @@ class AssignmentsController extends AppController
         $this->set(compact('assignments'));
         $this->set('_serialize', ['assignments']);
 
+
+        $this->set(compact('student'));
+        $this->set('_serialize', ['student']);
+
+
+
+
+
+        //sidebar stuff
         $section = $this->Sections->get($sectionid, [
             'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
         ]);
         $this->set('section', $section);
 
+        //user stuff
         $currentuser = $this->Users->get($this->Auth->user('id'),[]);
-
         $this->set(compact('currentuser') );
         $this->set('_serialize', ['currentuser']);
 

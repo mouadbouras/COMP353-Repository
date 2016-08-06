@@ -33,6 +33,17 @@ class SectionsController extends AppController
         }
     }
 
+    public function initialize()
+    {
+        parent::initialize();
+        $this->loadModel('Users');
+        $this->loadModel('Assignments'); 
+        $this->loadModel('Courses');
+        $this->loadModel('Sections');
+        $this->loadModel('Students');
+        $this->loadModel('Teams');
+    }
+
     /**
      * Index method
      *
@@ -59,11 +70,48 @@ class SectionsController extends AppController
     public function view($id = null)
     {   
         $section = $this->Sections->get($id, [
-            'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+            'contain' => ['Courses', 'Semesters','Assignments']
         ]);
-
-        $this->set('section', $section);
+        $this->set(compact('section', 'courses', 'Semesters', 'Assignments'));
         $this->set('_serialize', ['section']);
+
+        $student = $this->Students->find('all', [
+                'conditions' => ['user_id' => $this->Auth->user('id')],
+                'contain' => ['Users', 'Sections']
+        ])->first();
+
+
+
+        $members = null;
+        if($student!= null && $student->team_id != null){
+            $members = $this->Students->find('all', [
+                    'conditions' => ['team_id' => $student->team_id],
+                    'contain' => ['Users', 'Sections','Teams']
+            ]);
+            //adding teaminfo to student
+            $student = $this->Students->find('all', [
+                    'conditions' => ['user_id' => $this->Auth->user('id')],
+                    'contain' => ['Users', 'Sections', 'Teams']
+            ])->first();
+        }
+
+        $this->set(compact('members', 'users', 'sections', 'teams'));
+        $this->set('_serialize', ['members']);
+        
+
+        $this->set(compact('student', 'sections'));
+        $this->set('_serialize', ['student']);        // print_r($section->Courses);
+
+        // $sections = $this->Sections->find('all', [
+        //     'conditions' => [
+        //                         'sections.id' => $id 
+        //                     ],
+        //     'contain' => ['Courses']
+        //     ])->first();
+
+        // $this->set(compact('sections' , 'courses'));
+        // $this->set('_serialize', ['sections']);
+        // print_r($sections->course->name);
     }
 
     /**

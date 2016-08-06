@@ -1,6 +1,6 @@
 <?php $this->extend('/Common/course_sidebar'); ?>
 
-<div class="courses form large-9 medium-8 columns content">
+<div class="courses form large-9 medium-8 columns content custom-form">
     <?= $this->Form->create($course) ?>
     <fieldset>
         <legend><?= __('Edit Course') ?></legend>

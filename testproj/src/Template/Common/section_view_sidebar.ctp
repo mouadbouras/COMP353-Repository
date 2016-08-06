@@ -16,8 +16,10 @@
 		$linkgroups[] = [
 			'title' => 'Student',
 			'links' => [
-				['text' => 'Course Group', 
-				 'url' => $groupurl],
+				['text' => 'Section Page', 
+				 'url' => ['controller' => 'Sections', 
+				 		   'action' => 'view',
+				 		   $section->id]],
 				['text' => 'Assignments', 
 				 'url' => ['controller' => 'Assignments', 
 				 		   'action' => 'index',

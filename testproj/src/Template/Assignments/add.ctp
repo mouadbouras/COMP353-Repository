@@ -1,7 +1,7 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
 
 <div class="row"> 
-    <div class="col-xs-12 submit-file-form">
+    <div class="col-xs-12 custom-form">
     <?= $this->Form->create($assignment) ?>
     <fieldset>
         <legend><?= __('Add Assignment') ?></legend>

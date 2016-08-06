@@ -1,6 +1,6 @@
 <?php $this->extend('/Common/section_sidebar'); ?>
 
-<div class="sections form large-9 medium-8 columns content">
+<div class="sections form large-9 medium-8 columns content custom-form">
     <?= $this->Form->create($section) ?>
     <fieldset>
         <legend><?= __('Edit Section') ?></legend>

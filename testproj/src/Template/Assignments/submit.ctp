@@ -3,7 +3,7 @@
 <?= $this->Flash->render() ?>
 
 <div class="row"> 
-    <div class="col-xs-12 submit-file-form">
+    <div class="col-xs-12 custom-form">
         <?= $this->Form->create($file,['enctype' => 'multipart/form-data']) ?>
         <fieldset>
             <legend><?= __('New Submission') ?></legend>
