@@ -172,8 +172,15 @@ class TeamsController extends AppController
                 $this->Flash->error(__('The team could not be saved. Please, try again.'));
             }
         }
-        $users = $this->Teams->Users->find('list', ['limit' => 200]);
+        
+        $users = $this->Students->find('list', 
+                ['limit' => 200, 
+                'keyField' => 'user_id', 
+                'valueField' => 'user_id'])
+            ->where(['team_id' => $id]);
+
         $sections = $this->Teams->Sections->find('list', ['limit' => 200]);
+
         $this->set(compact('team', 'users', 'sections'));
         $this->set('_serialize', ['team']);
 
