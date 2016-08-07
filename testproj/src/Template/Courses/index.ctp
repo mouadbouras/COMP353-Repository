@@ -18,7 +18,7 @@
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $course->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $course->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $course->id], ['confirm' => __('Are you sure you want to delete # {0}?', $course->id)]) ?>
+                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $course->id], ['confirm' => __('Are you sure you want to delete Course #{0} "{1}"? All of the related sections, teams, assignments and submissions will be deleted.', $course->id, $course->name)]) ?>
                 </td>
             </tr>
             <?php endforeach; ?>

@@ -104,6 +104,36 @@ class CoursesController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
+
+        // 'cascadeCallbacks' => true on tables not working 
+        //(probably because of DB not having cascade)
+        $this->loadModel('Sections');
+
+        $this->loadModel('Assignments');
+        $this->loadModel('Submissions');
+
+        $this->loadModel('Teams');
+        $this->loadModel('Students');
+        $sections = $this->Sections->find()
+            ->where(['course_id' => $id]);
+
+        //cascade all
+        foreach ($sections as $section) {
+            //delete assignments
+            $assignments = $this->Assignments->find()
+                ->where(['section_id' => $section->id]);
+            foreach($assignments as $assignment){
+                $this->Submissions->deleteAll(['assignment_id' => $assignment->id]);
+            }
+            $this->Assignments->deleteAll(['section_id' => $section->id]);
+
+            //delete students
+            $this->Students->deleteAll(['section_id' => $section->id]);
+            $this->Teams->deleteAll(['section_id' => $section->id]);
+        }
+        $this->Sections->deleteAll(['course_id' => $id]);
+
+
         $course = $this->Courses->get($id);
         if ($this->Courses->delete($course)) {
             $this->Flash->success(__('The course has been deleted.'));

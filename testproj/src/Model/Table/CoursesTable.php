@@ -37,7 +37,7 @@ class CoursesTable extends Table
         $this->primaryKey('id');
 
         $this->hasMany('Sections', [
-            'foreignKey' => 'course_id'
+            'foreignKey' => 'course_id',
         ]);
     }
 
