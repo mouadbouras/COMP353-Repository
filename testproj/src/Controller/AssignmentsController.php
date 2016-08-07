@@ -16,6 +16,21 @@ class AssignmentsController extends AppController
         $user = new User($user);
         $action = $this->request->params['action'];
         $pass = $this->request->params['pass'];
+
+
+        if($action=='index' && $pass && $user->isTA($pass[0])!=true && $user->isAdmin()!=true){
+            $sec = $this->Sections->get($pass[0], [
+                'contain' => ['Courses', 'Semesters', 'Users', 'Assignments', 'Students', 'Teams']
+            ]);        
+
+            if ($sec->semester->end_date <= Time::now()->subHours(4))
+            {
+                $this->Flash->error(__('The selected semester is completed'));
+                return false;
+            }
+        }
+
+
         switch ($action) {
             case 'view': 
             case 'assignment':
