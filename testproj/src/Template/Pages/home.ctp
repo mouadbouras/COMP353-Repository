@@ -33,11 +33,6 @@
                     }]);
 ?>
 
-<?= $this->Flash->render() ?>
-
-    <?php echo $this->Flash->render(); ?> 
-    <?php echo $this->Flash->render(); ?>
-
 <div id='courses'>
     <div class='center'>
         <span id='title'>
@@ -49,6 +44,7 @@
         </div>
 
         <?= $this->Flash->render('Auth') ?>
+        <?= $this->Flash->render() ?>
 
         <?php if($studentInfos->count()): ?>
         <div class='role-group'>

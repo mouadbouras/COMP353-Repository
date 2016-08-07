@@ -6,22 +6,48 @@
 <div class=" col-xs-12 ">
 
 <?php if($student!= null && $student->section_id == $section->id) { ?>
-    <h3><?= h('General Info') ?></h3>
-        <table class="vertical-table">
-           	<tr>
-                <th><?= __('Course') ?></th>
-                <td><?= h($section->course->name) ?></td>
-            </tr>
-            <tr>
-                <th><?= __('Section Info') ?></th>
-                <td><?= h( $section->id) ?></td>
-            </tr>       
-            <tr>
-                <th><?= __('Team Info') ?></th>
-                <td><?= ($student->team_id != null) ? h( 'Team ' .  $student->team_id) : "No Team"  ;?></td>
-            </tr>    
-        </table>
+    
+	<div class="row">
+		<div class=" col-xs-4 ">
+		    <h3><?= h('Section Info') ?></h3>
+	        <table class="vertical-table">
+	           	<tr>
+	                <th><?= __('Course') ?></th>
+	                <td><?= h($section->course->name) ?></td>
+	            </tr>
+	            <tr>
+	                <th><?= __('Section ') ?></th>
+	                <td><?= h( $section->id) ?></td>
+	            </tr>       
+	            <tr>
+	                <th><?= __('Team ') ?></th>
+	                <td><?= ($student->team_id != null) ? h( 'Team ' .  $student->team_id) : "No Team"  ;?></td>
+	            </tr>    
+	        </table>
+		</div>
+		<div class=" col-xs-8 ">
+		    <h3><?= h('Semester Info') ?></h3>
+		        <table class="vertical-table">
+		           	<tr>
+		                <th><?= __('Semester') ?></th>
+		                <td><?= h($section->semester->name) ?></td>
+		            </tr>
+		            <tr>
+		                <th><?= __('Start Date') ?></th>
+		                <td><?=  h($section->semester->start_date)?></td>
+		            </tr>  
+		            <tr>
+		                <th><?= __('End Date') ?></th>
+		                <td><?= h( $section->semester->end_date) ?></td>
+		            </tr>         
+		        </table>
+		</div>
+	</div>
+
+
+
 	<br/>
+
 
 		<?php if($members != null) { ?>
 		<h3><?= "Team " . h($student->team_id) ?></h3>
