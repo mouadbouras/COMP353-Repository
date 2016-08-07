@@ -313,7 +313,7 @@ class AssignmentsController extends AppController
             if ($this->request->is('post'))
             {
                 //file submission form post action.
-                if($this->checkUploadFile($this->request->data['submission_file'])){
+                if($this->checkUploadFile($this->request->data['submission_file'], $student->team_id)){
                     
                     $file->name           = $this->request->data['name'] ;
                     $file->version_number = $this->request->data['version_number'] . " " ;
@@ -559,8 +559,8 @@ class AssignmentsController extends AppController
     }
 
 
-    public function checkUploadFile($file){
-        
+    public function checkUploadFile($file, $team_id){
+
             // Undefined | Multiple Files | $_FILES Corruption Attack
             // If this request falls under any of them, treat it invalid.
             if (
@@ -587,9 +587,12 @@ class AssignmentsController extends AppController
                     return false;
             }
 
-            // You should also check filesize here. 
-            if ($file['size'] > 500000000) {
-                $this->Flash->error(__('File is too big.' )); 
+            //check file size limit 
+            $team = $this->Teams->get($team_id);
+            $newtotalsize = $file['size']+$this->Submissions->getSizeUsed($team->id);
+            $allowedsize = $team->size_limit;
+            if ($newtotalsize > $allowedsize) {
+                $this->Flash->error(__('File is too big. Your team has reached its upload size limit.' )); 
                 return false;
             }
 
