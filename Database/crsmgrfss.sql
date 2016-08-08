@@ -8,6 +8,36 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
+DROP TABLE IF EXISTS `archive_files`;
+CREATE TABLE IF NOT EXISTS `archive_files` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(65) NOT NULL,
+  `size_bytes` int(11) UNSIGNED NOT NULL,
+  `checksum` varchar(65) NOT NULL,
+  `upload_date` datetime NOT NULL,
+  `user_id` int(11) UNSIGNED NOT NULL,
+  `ip_address` varchar(65) NOT NULL,
+  `version_number` int(2) UNSIGNED NOT NULL,
+  `file_name` varchar(65) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_files_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `archive_submissions`;
+CREATE TABLE IF NOT EXISTS `archive_submissions` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `assignment_id` int(11) UNSIGNED NOT NULL,
+  `team_id` int(11) UNSIGNED NOT NULL,
+  `file_id` int(11) UNSIGNED NOT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `deletion_date` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fk_submissions_assignment_id` (`assignment_id`),
+  KEY `fk_submissions_team_id` (`team_id`),
+  KEY `fk_submissions_file_id` (`file_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+
 DROP TABLE IF EXISTS `assignments`;
 CREATE TABLE IF NOT EXISTS `assignments` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,

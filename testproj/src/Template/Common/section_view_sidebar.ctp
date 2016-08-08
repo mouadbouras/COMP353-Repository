@@ -79,13 +79,8 @@
 				['text' => 'Manage Groups', 
 				 'url' => ['controller' => 'Teams', 
 				 		   'action' => 'index',
-				 		   	$section->id],
-				['text' => 'Add a group', 
-				 'url' => ['controller' => 'Teams', 
-				 		   'action' => 'add',
 				 		   	$section->id]]
-
-			]]];
+			]];
 	}
 
 	$this->set('linkgroups', $linkgroups);
