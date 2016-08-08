@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Model\Entity\User;
+use Cake\I18n\Time;
 
 /**
  * Teams Controller
@@ -76,7 +77,11 @@ class TeamsController extends AppController
         $this->set('editable', $user->isInstructor($id) || $user->isAdmin());
 
         $semesterEnd = $section->semester->end_date;
-        $this->set('canArchive', 1);
+        if($semesterEnd  <= Time::now()->subHours(4)){
+            $this->set('canArchive', 1);
+        }else{
+            $this->set('canArchive', 0);
+        } 
     }
 
     /**

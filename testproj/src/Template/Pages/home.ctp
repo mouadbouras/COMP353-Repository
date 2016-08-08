@@ -97,7 +97,7 @@
 
 
 
-<br><br>
+<!-- <br><br>
 <table>
     <tr>
         <th>Action</th>
@@ -224,3 +224,4 @@ Notes:<br>
 - The files would not be accessible to the group after the end of the course.<br>
 - Adding any member into a group requires the knowledge of the person’s CrsMgr ID, section ID
 and groupID.<br>
+ -->

@@ -23,9 +23,9 @@
             <?php foreach ($assignments as $assignment): ?>
             <tr>
                 <td><?= $this->Number->format($assignment->id) ?></td>
-                <td><?= $this->Html->link(__($assignment->name), ['action' => 'assignment', $assignment->id]) ?>
+                <td><?= $this->Html->link(__($assignment->name), ['action' => 'assignment', $assignment->id, 0,$section->id]) ?>
 
-                <td><?= h($assignment->section->id) ?> </td> 
+                <td><?= h($section->id) ?> </td> 
                 <td><?= h($assignment->due_date) ?></td>
                 
                 <?php if($currentuser->isTA($section->id) == 1 or $currentuser->isInstructor($section->id) == 1 ){ ?>
@@ -58,19 +58,19 @@
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
-                <th><?= $this->Paginator->sort('id') ?></th>
-                <th><?= $this->Paginator->sort('name') ?></th>
-                <th><?= $this->Paginator->sort('section_id') ?></th>
-                <th><?= $this->Paginator->sort('due_date') ?></th>
+                <th><?= h('Id') ?></th>
+                <th><?= h('Name') ?></th>
+                <th><?= h('Section id') ?></th>
+                <th><?= h('Due date') ?></th>
                 <th class="actions"> <?=  __('Actions') ?> </th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($assignments as $assignment): ?>
+            <?php foreach ($sectionassignments as $assignment): ?>
             <tr>
                 <td><?= $this->Number->format($assignment->id) ?></td>
                 <td><?= $this->Html->link(__($assignment->name), ['action' => 'teamassignment', $section->id,$assignment->id]) ?></td>
-                <td><?= h($assignment->section->id) ?></td>
+                <td><?= h($section->id) ?></td>
                 <td><?= h($assignment->due_date) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $assignment->id, $section->id]) ?>

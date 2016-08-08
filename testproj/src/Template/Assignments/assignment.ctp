@@ -17,12 +17,12 @@
 
                 <tr>
                     <th><?= __('New Submission') ?></th>
-                    <td><?= $this->Html->link(__('Submit'), ['action' => 'submit' , $assignment->id ] );  ?></td>
+                    <td><?= $this->Html->link(__('Submit'), ['action' => 'submit' , $assignment->id, $assignment->section_id ] );  ?></td>
                 </tr>    
                 <tr>
                     <th><?= __('Deleted') ?></th>
                     <td><?= $this->Html->link(__(($showdeleted == 0) ? "Show" : "Hide" ), ['action' => 'assignment' , $assignment->id ,
-                     ($showdeleted == 0) ? 1 : 0 ] );  ?></td>
+                     ($showdeleted == 0) ? 1 : 0 , $assignment->section_id ] );  ?></td>
                 </tr>  
 
             </table>
@@ -65,11 +65,11 @@
                 <td><?= h($active_submission->file->upload_date) ?></td>
                 <td><?= $this->Html->link($active_submission->file->name, ['action' => 'download' , $active_submission->file->file_name ] ); ?></td>
                 <?=  ($active_submission->is_deleted == 0) ? 
-                     "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'deletefile', $active_submission->file->id, $active_submission->assignment_id], ['confirm' => __('Are you sure you want to delete {0}?', $active_submission->file->name)]) .
+                     "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'deletefile', $active_submission->file->id, $active_submission->assignment_id ,$section->id ], ['confirm' => __('Are you sure you want to delete {0}?', $active_submission->file->name)]) .
                      "</td>"  
                      :  
                      "<td> " . $this->Form->postLink(__('Recover'), 
-                               ['action' => 'recover' , $active_submission->file->id, $active_submission->assignment_id], ['confirm' => __('Are you sure you want to recover {0}?', $active_submission->file->name)]) . "</td>" ; ?>
+                               ['action' => 'recover' , $active_submission->file->id, $active_submission->assignment_id,$section->id ], ['confirm' => __('Are you sure you want to recover {0}?', $active_submission->file->name)]) . "</td>" ; ?>
 
             </tr>
             <?php }  ?>
@@ -117,15 +117,15 @@
                 <?php  
                     if ($submission->is_deleted == 0) {
 
-                        echo  "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'deletefile', $submission->file->id, $submission->assignment_id], ['confirm' => __('Are you sure you want to delete {0}?', $submission->file->name)]) . " ";
+                        echo  "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'deletefile', $submission->file->id, $submission->assignment_id,$section->id ], ['confirm' => __('Are you sure you want to delete {0}?', $submission->file->name)]) . " ";
 
                         echo ($isLeader == 1) ? $this->Form->postLink(__('Set Active'), 
-                                    ['action' => 'rollback' , $submission->file->id, $submission->assignment_id, $submission->team_id], ['confirm' => __('Are you sure you want to rollback to {0}?', $submission->file->name)]) : "" ;
+                                    ['action' => 'rollback' , $submission->file->id, $submission->assignment_id, $submission->team_id, $section->id ], ['confirm' => __('Are you sure you want to rollback to {0}?', $submission->file->name)]) : "" ;
                              "</td>"  ;
 
                     }
                     else{
-                         echo  "<td> " . $this->Form->postLink(__('Recover'), ['action' => 'recover' , $submission->file->id, $submission->assignment_id], ['confirm' => __('Are you sure you want to recover {0}?', $submission->file->name)]) . "</td>" ; 
+                         echo  "<td> " . $this->Form->postLink(__('Recover'), ['action' => 'recover' , $submission->file->id, $submission->assignment_id, $section->id ], ['confirm' => __('Are you sure you want to recover {0}?', $submission->file->name)]) . "</td>" ; 
                     }
                 ?> 
 

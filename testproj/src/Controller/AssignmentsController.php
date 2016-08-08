@@ -83,28 +83,38 @@ class AssignmentsController extends AppController
     public function index($sectionid = null)
     {
         $student = $this->Students->find('all', [
-                'conditions' => ['user_id' => $this->Auth->user('id')]
+                'conditions' => ['user_id' => $this->Auth->user('id'),
+                                'section_id' => $sectionid]
             ])->first();
 
-        if($student != null)
+        if($student != null )
         {
-            $sectionid = $student->section_id;
-            if($student->team_id == null)
-            $this->Flash->error(__('You must be part of a team to view your assignments')); 
-        }
-
-        $this->paginate = [ 'contain' => ['Sections']];
-        $assignments = $this->paginate($this->Assignments);
-
-        if($sectionid){
+            //$sectionid = $student->section_id;
+            if($student->team_id == null){
+            $this->Flash->error(__('You must be part of a team to view your assignments')); }
+            
             $assignments = $this->paginate(
                 $this->Assignments->find()
-                    ->where(['section_id' => $sectionid])
+                    ->where(['section_id' => $student->section_id])
             );
         }
 
         $this->set(compact('assignments'));
         $this->set('_serialize', ['assignments']);
+
+        $this->paginate = [ 'contain' => ['Sections']];
+        $assignments = $this->paginate($this->Assignments);
+
+        
+        $sectionassignments =  null; 
+        if($sectionid){
+            $sectionassignments = $this->Assignments->find('all', [
+                'conditions' => ['section_id' => $sectionid]
+                ]);
+        }
+
+        $this->set(compact('sectionassignments'));
+        $this->set('_serialize', ['sectionassignments']);
 
 
         $this->set(compact('student'));
@@ -153,13 +163,13 @@ class AssignmentsController extends AppController
     }
 
 
-    public function assignment($id = null, $showdeleted = 0)
+    public function assignment($id = null, $showdeleted = 0, $sectionid=null)
     {
        // $session = $this->request->session();
         if($id != null)
         {
             $student = $this->Students->find('all', [
-                'conditions' => ['user_id' => $this->Auth->user('id')]
+                'conditions' => ['user_id' => $this->Auth->user('id'),'section_id' => $sectionid]
             ])->first();
 
 
@@ -287,7 +297,6 @@ class AssignmentsController extends AppController
             $this->set(compact('assignment'));
             $this->set('_serialize', ['assignment']);
 
-             
             $submissions = $this->getSubmissionHistory($assignmentid,$teamid,1);
             
             $this->set(compact('submissions' , 'files'));
@@ -301,6 +310,7 @@ class AssignmentsController extends AppController
 
         }
 
+          //  print_r($active_submission);
 
 
             $section = $this->Sections->get($sectionid, [
@@ -312,7 +322,7 @@ class AssignmentsController extends AppController
             $this->set('teamid', $teamid);
     }    
 
-    public function submit($id =null , $file = null)
+    public function submit($id =null, $sectionid=null , $file = null)
     {
        // $session = $this->request->session();
         if($id != null)
@@ -322,7 +332,7 @@ class AssignmentsController extends AppController
             $submission = $this->Submissions->newEntity();
 
             $student = $this->Students->find('all', [
-                'conditions' => ['user_id' => $this->Auth->user('id')]
+                'conditions' => ['user_id' => $this->Auth->user('id'),'section_id'=>$sectionid]
             ])->first();
 
             if ($this->request->is('post'))
@@ -360,11 +370,11 @@ class AssignmentsController extends AppController
                         else
                         {
                            $this->Flash->error(__('The Submission could not be saved. Please, try again.')); 
-                            return $this->redirect(['action' => 'assignment', $id ]);
+                            return $this->redirect(['action' => 'assignment', $id ,0,$sectionid]);
 
                         }
                         $this->Flash->success(__('Your File has been saved.'));
-                        return $this->redirect(['action' => 'assignment', $id ]);
+                        return $this->redirect(['action' => 'assignment', $id, 0, $sectionid ]);
                     } else {
                         $this->Flash->error(__('The File could not be saved. Please, try again.'));
                     }
@@ -385,7 +395,7 @@ class AssignmentsController extends AppController
         }
     }
 
-    public function recover($id =null,$assignment=null)
+    public function recover($id =null,$assignment=null,$sectionid=null)
     {
         $submission = $this->Submissions->find('all', [
                 'conditions' => [
@@ -402,13 +412,13 @@ class AssignmentsController extends AppController
 
             $this->Submissions->save($submission);
 
-            return $this->redirect(['action' => 'assignment' , $assignment,1 ] );
+            return $this->redirect(['action' => 'assignment' , $assignment,1 ,$sectionid] );
         }
         $this->Flash->error(__('Nothing was recovered'));
-        return $this->redirect(['action' => 'assignment' , $assignment,0 ] );
+        return $this->redirect(['action' => 'assignment' , $assignment,0 ,$sectionid] );
     }
 
-    public function rollback($file =null ,$assignment =null,$team=null)
+    public function rollback($file =null ,$assignment =null,$team=null, $sectionid=null)
     {
         $submissions = $this->Submissions->find('all', [
                 'conditions' => [   'assignment_id' => $assignment ,
@@ -443,11 +453,11 @@ class AssignmentsController extends AppController
                 $this->Submissions->save($submission);
                 $this->Flash->success(__('The file has been rolled back.'));  }
 
-                return $this->redirect(['action' => 'assignment' , $assignment] );
+                return $this->redirect(['action' => 'assignment' , $assignment, 0 , $sectionid] );
         }
         else 
              $this->Flash->error(__('Nothing was rolledback'));
-        return $this->redirect(['action' => 'assignment' , $assignment] );
+        return $this->redirect(['action' => 'assignment' , $assignment, 0,$sectionid] );
     }
 
     public function download($fileName) {
@@ -547,7 +557,7 @@ class AssignmentsController extends AppController
      * @return \Cake\Network\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function deletefile($id = null , $assignment =null)
+    public function deletefile($id = null , $assignment =null,$sectionid=null)
     {
 
         $submission = $this->Submissions->find('all', [
@@ -566,10 +576,10 @@ class AssignmentsController extends AppController
 
                     $this->Submissions->save($submission);
 
-                    return $this->redirect(['action' => 'assignment' , $assignment,1 ] );
+                    return $this->redirect(['action' => 'assignment' , $assignment,1,$sectionid] );
                 }
                 $this->Flash->error(__('Nothing was deleted'));
-                return $this->redirect(['action' => 'assignment' , $assignment,0 ] );
+                return $this->redirect(['action' => 'assignment' , $assignment,0,$sectionid ] );
 
     }
 

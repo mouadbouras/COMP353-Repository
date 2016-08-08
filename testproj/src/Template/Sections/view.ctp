@@ -71,6 +71,46 @@
 		    <?php endforeach; ?>
 			</table>
 		<?php } ?>
+<?php } elseif ($student== null) { ?>
+	
+	<div class="row">
+		<div class=" col-xs-4 ">
+		    <h3><?= h('Section Info') ?></h3>
+	        <table class="vertical-table">
+	           	<tr>
+	                <th><?= __('Course') ?></th>
+	                <td><?= h($section->course->name) ?></td>
+	            </tr>
+	            <tr>
+	                <th><?= __('Section ') ?></th>
+	                <td><?= h( $section->id) ?></td>
+	            </tr>          
+	        </table>
+		</div>
+		<div class=" col-xs-8 ">
+		    <h3><?= h('Semester Info') ?></h3>
+		        <table class="vertical-table">
+		           	<tr>
+		                <th><?= __('Semester') ?></th>
+		                <td><?= h($section->semester->name) ?></td>
+		            </tr>
+		            <tr>
+		                <th><?= __('Start Date') ?></th>
+		                <td><?=  h($section->semester->start_date)?></td>
+		            </tr>  
+		            <tr>
+		                <th><?= __('End Date') ?></th>
+		                <td><?= h( $section->semester->end_date) ?></td>
+		            </tr>         
+		        </table>
+		</div>
+	</div>
+
+
+
+	<br/>
+
 <?php } ?>
+
 </div>
 </div>

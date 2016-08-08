@@ -104,25 +104,27 @@ class SectionsController extends AppController
         $section = $this->Sections->get($id, [
             'contain' => ['Courses', 'Semesters','Assignments']
         ]);
+        
         $this->set(compact('section', 'courses', 'Semesters', 'Assignments'));
         $this->set('_serialize', ['section']);
 
         $student = $this->Students->find('all', [
-                'conditions' => ['user_id' => $this->Auth->user('id')],
+                'conditions' => ['user_id' => $this->Auth->user('id'),'section_id' => $id],
                 'contain' => ['Users', 'Sections']
         ])->first();
-
 
 
         $members = null;
         if($student!= null && $student->team_id != null){
             $members = $this->Students->find('all', [
-                    'conditions' => ['team_id' => $student->team_id],
+                    'conditions' => ['team_id' => $student->team_id,
+                                     'Sections.id' => $id
+                                        ],
                     'contain' => ['Users', 'Sections','Teams']
             ]);
             //adding teaminfo to student
             $student = $this->Students->find('all', [
-                    'conditions' => ['user_id' => $this->Auth->user('id')],
+                    'conditions' => ['user_id' => $this->Auth->user('id'), 'Sections.id' => $id],
                     'contain' => ['Users', 'Sections', 'Teams']
             ])->first();
         }
