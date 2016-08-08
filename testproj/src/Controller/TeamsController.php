@@ -53,7 +53,6 @@ class TeamsController extends AppController
 
     }
 
-
     /**
      * Index method
      *
@@ -75,6 +74,9 @@ class TeamsController extends AppController
 
         $user = new User($this->Auth->user());
         $this->set('editable', $user->isInstructor($id) || $user->isAdmin());
+
+        $semesterEnd = $section->semester->end_date;
+        $this->set('canArchive', 1);
     }
 
     /**

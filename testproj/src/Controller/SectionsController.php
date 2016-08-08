@@ -4,6 +4,8 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
 use App\Model\Entity\User;
+use App\Model\Entity\ArchiveFile;
+use App\Model\Entity\ArchiveSubmission;
 
 /**
  * Sections Controller
@@ -21,6 +23,7 @@ class SectionsController extends AppController
             case 'add':
             case 'edit':
             case 'delete':
+            case 'archiveFiles':
                 return $user->isAdmin();
                 break;
             case 'view':
@@ -38,10 +41,39 @@ class SectionsController extends AppController
         parent::initialize();
         $this->loadModel('Users');
         $this->loadModel('Assignments'); 
+        $this->loadModel('Submissions'); 
         $this->loadModel('Courses');
         $this->loadModel('Sections');
         $this->loadModel('Students');
         $this->loadModel('Teams');
+    }
+
+    public function archiveFiles($id){
+        $this->loadModel('ArchiveSubmissions'); 
+        $this->loadModel('ArchiveFiles'); 
+        $this->loadModel('Files'); 
+
+        $assignments = $this->Assignments->find('all',
+            ['contain' => ['Submissions', 'Submissions.Files']])
+            ->where(['section_id' => $id]);
+        foreach ($assignments as $assignment) {
+            foreach($assignment->submissions as $submission){
+
+                //save in archive
+                $newsub = $this->ArchiveSubmissions->newEntity($submission->toArray());
+
+                $newfile = $this->ArchiveFiles->newEntity($submission->file->toArray());
+
+                $this->ArchiveFiles->save($newfile);
+                $this->ArchiveSubmissions->save($newsub);
+
+                //delete originals
+                $this->Files->delete($submission->file);
+                $this->Submissions->delete($submission);
+            }
+        }
+        return $this->redirect(['action' => 'view', $id]);
+
     }
 
     /**
