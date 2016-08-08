@@ -11,7 +11,6 @@
             <tr>
                 <th><?= $this->Paginator->sort('id') ?></th>
                 <th><?= $this->Paginator->sort('name') ?></th>
-                <th><?= $this->Paginator->sort('section_id') ?></th>
                 <th><?= $this->Paginator->sort('due_date') ?></th>
                 <?php if ($currentuser->isTA($section->id) == 1 || $currentuser->isInstructor($section->id) == 1 ) { ?>
                    <th class="actions"> <?=  __('Actions') ?> </th>
@@ -25,7 +24,6 @@
                 <td><?= $this->Number->format($assignment->id) ?></td>
                 <td><?= $this->Html->link(__($assignment->name), ['action' => 'assignment', $assignment->id, 0,$section->id]) ?>
 
-                <td><?= h($section->id) ?> </td> 
                 <td><?= h($assignment->due_date) ?></td>
                 
                 <?php if($currentuser->isTA($section->id) == 1 or $currentuser->isInstructor($section->id) == 1 ){ ?>
@@ -60,7 +58,6 @@
             <tr>
                 <th><?= h('Id') ?></th>
                 <th><?= h('Name') ?></th>
-                <th><?= h('Section id') ?></th>
                 <th><?= h('Due date') ?></th>
                 <th class="actions"> <?=  __('Actions') ?> </th>
             </tr>
@@ -70,7 +67,6 @@
             <tr>
                 <td><?= $this->Number->format($assignment->id) ?></td>
                 <td><?= $this->Html->link(__($assignment->name), ['action' => 'teamassignment', $section->id,$assignment->id]) ?></td>
-                <td><?= h($section->id) ?></td>
                 <td><?= h($assignment->due_date) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $assignment->id, $section->id]) ?>
@@ -79,7 +75,7 @@
             </tr>
             <?php endforeach; ?>
             <tr>
-                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <td>-</td><td>-</td><td>-</td>
                 <td><?= $this->Html->link(__('Add'), ['action' => 'Add', $section->id]) ?></td>
             </tr>
         </tbody>

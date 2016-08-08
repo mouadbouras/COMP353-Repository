@@ -119,6 +119,8 @@ class TeamsController extends AppController
         'conditions' => [
                             'team_id' => $id 
                         ]
+                ,
+                'contain' => ['Files'],
         ])-> count();
         $this->set('totalTeamSubmissions', $totalTeamSubmissions);
 
