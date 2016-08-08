@@ -1,4 +1,5 @@
 <?php $this->extend('/Common/section_sidebar'); ?>
+<?= $this->Flash->render() ?>
 
 <div class="sections index large-9 medium-8 columns content">
     <h3><?= __('Sections') ?></h3>

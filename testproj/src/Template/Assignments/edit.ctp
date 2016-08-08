@@ -1,5 +1,6 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
 
+<?= $this->Flash->render() ?>
 
 <div class="row"> 
     <div class="col-xs-12 custom-form">

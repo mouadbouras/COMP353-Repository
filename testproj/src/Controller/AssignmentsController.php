@@ -222,7 +222,7 @@ class AssignmentsController extends AppController
                                     
                                     
                                 ],
-                'contain' => ['Files'],
+                'contain' => ['Files' , 'Files.Users'],
                 'order' => ['Files.version_number' => 'DESC']
                 ]);
             }
@@ -233,7 +233,7 @@ class AssignmentsController extends AppController
                                     'team_id' => $teamid ,
                                     'is_deleted' => 0
                                 ],
-                'contain' => ['Files'],
+                'contain' => ['Files' , 'Files.Users'],
                 'order' => ['Files.version_number' => 'DESC']
                 ]);
 
@@ -249,7 +249,7 @@ class AssignmentsController extends AppController
                                 'is_deleted' => 0,
                                 'is_active' => 1
                             ],
-            'contain' => ['Files'],
+            'contain' => ['Files', 'Files.Users'],
             'order' => ['Files.version_number' => 'DESC']
             ])->first();
        
@@ -260,7 +260,7 @@ class AssignmentsController extends AppController
                                 'team_id' => $teamid ,
                                 'is_deleted' => 0
                             ],
-            'contain' => ['Files'],
+            'contain' => ['Files', 'Files.Users'],
             'order' => ['Files.version_number' => 'DESC']
             ])->first();
         }    

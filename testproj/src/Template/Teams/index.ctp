@@ -1,4 +1,5 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
+<?= $this->Flash->render() ?>
 
     <h3><?= __('Teams') ?></h3>
     <table cellpadding="0" cellspacing="0">

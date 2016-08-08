@@ -32,7 +32,11 @@
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
+
                 <th><?= h('File') ?></th>
+
+                <th><?= h('User') ?></th>
+
                 <th><?= h('Checksum') ?></th>
                 <th><?= h('IP Address') ?></th>
                 <th><?= h('Size') ?></th>
@@ -48,7 +52,10 @@
         <tbody>
             <?php if ($active_submission!= null) {?>
                 <tr <?=  ($active_submission->is_deleted == 0) ? ""  :  "class='deleted'" ; ?> >
+
                 <td><?= h($active_submission->file->name) ?></td>
+
+                <td><?= h($active_submission->file->user->first_name ) ?></td>
 
                 <td><?= h($active_submission->file->checksum) ?></td>
                 <td><?= h($active_submission->file->ip_address) ?></td>
@@ -77,6 +84,8 @@
             <tr>
                 <th><?= h('File') ?></th>
 
+                <th><?= h('User') ?></th>
+
                 <th><?= h('Checksum') ?></th>
                 <th><?= h('IP Address') ?></th>
                 <th><?= h('Size') ?></th>
@@ -93,7 +102,10 @@
 
             <?php foreach ($submissions as $submission): ?>
             <tr <?=  ($submission->is_deleted == 0) ? ""  :  "class='deleted'" ; ?> >
+
                 <td><?= h($submission->file->name) ?></td>
+
+                <td><?= h($submission->file->user->first_name ) ?></td>
 
                 <td><?= h($submission->file->checksum) ?></td>
                 <td><?= h($submission->file->ip_address) ?></td>

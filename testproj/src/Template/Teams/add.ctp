@@ -1,4 +1,5 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
+<?= $this->Flash->render() ?>
 
 <div class="teams form large-9 medium-8 columns content custom-form">
 

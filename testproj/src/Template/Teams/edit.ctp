@@ -16,6 +16,8 @@
         ]];
     $this->set('linkgroups', $linkgroups);
 ?>
+<?= $this->Flash->render() ?>
+
 
     <div class="teams form large-9 medium-8 columns content custom-form">
 

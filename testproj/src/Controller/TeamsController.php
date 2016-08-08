@@ -48,6 +48,9 @@ class TeamsController extends AppController
         $this->loadModel('Students');
         $this->loadModel('Users');
         $this->loadModel('Sections');
+        $this->loadModel('Submissions');
+        $this->loadModel('Files');
+
     }
 
 
@@ -104,7 +107,30 @@ class TeamsController extends AppController
         $section = $team->section;
         $this->set('section', $section);
         $this->set('_serialize', ['section']);
+    
+        $totalTeamSubmissions = $this->Submissions->find('all', [
+        'conditions' => [
+                            'team_id' => $id 
+                        ]
+        ])-> count();
+        $this->set('totalTeamSubmissions', $totalTeamSubmissions);
 
+
+        $contributions = array();
+
+        foreach($students as $r)
+        {
+            $count = $this->Submissions->find('all', [
+                'conditions' => [
+                                    'user_id' => $r->user_id ,
+                                    'team_id' => $id 
+                                ],
+                'contain' => ['Files'],
+                ])->count();
+            $contributions[$r->user_id] = $count ;
+        }
+        
+        $this->set('contributions', $contributions);
 
         $canEdit = $user->isInstructor($team->section_id) || $user->isAdmin();
         $this->set('canEdit', $canEdit);

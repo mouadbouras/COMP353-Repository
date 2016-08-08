@@ -1,4 +1,5 @@
 <?php $this->extend('/Common/course_sidebar'); ?>
+<?= $this->Flash->render() ?>
 
 
     <h3><?= __('Courses') ?></h3>

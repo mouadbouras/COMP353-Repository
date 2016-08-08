@@ -1,4 +1,5 @@
 <?php $this->extend('/Common/section_sidebar'); ?>
+<?= $this->Flash->render() ?>
 
 <div class="sections form large-10 medium-6 columns content custom-form">
     <?= $this->Form->create($section) ?>

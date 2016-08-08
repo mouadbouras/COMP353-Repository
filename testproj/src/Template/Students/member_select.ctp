@@ -1,4 +1,5 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
+<?= $this->Flash->render() ?>
 
 <span class='bold'>Add a Member to Team <?= $team->id ?></span><br>
 <hr>

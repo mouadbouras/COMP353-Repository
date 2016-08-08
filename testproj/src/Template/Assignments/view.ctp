@@ -1,3 +1,4 @@
+<?= $this->Flash->render() ?>
 
 <div class="assignments index large-9 medium-8 columns content">
     <h3><?= __('Assignments') ?></h3>

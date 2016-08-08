@@ -16,6 +16,9 @@
 
     $this->set('linkgroups', $linkgroups);
 ?>
+
+<?= $this->Flash->render() ?>
+
 <div class="courses view large-9 medium-8 columns content">
     <h3><?= h($course->name) ?></h3>
     <table class="vertical-table">
