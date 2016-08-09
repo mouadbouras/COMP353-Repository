@@ -341,7 +341,22 @@ class AssignmentsController extends AppController
                 if($this->checkUploadFile($this->request->data['submission_file'], $student->team_id)){
                     
                     $file->name           = $this->request->data['name'] ;
-                    $file->version_number = $this->request->data['version_number'] . " " ;
+                    //$file->version_number = $this->request->data['version_number'] . " " ;
+                    $latestVersion = $this->Submissions->find('all', [
+                    'conditions' => [
+                                        'assignment_id' => $id ,
+                                        'team_id' => $student->team_id ,
+                                        'OR' => [ 'is_deleted' => 0
+                                         , 
+                                        'deletion_date is NULL  or  deletion_date > ' => Time::now()->subHours(28) ] ,
+                                    ],
+                    'contain' => ['Files' , 'Files.Users'],
+                    'order' => ['Files.version_number' => 'DESC']
+                    ])->first();
+                    $latestVersion = ($latestVersion != null) ? intval($latestVersion->file->version_number) : 0 ;
+
+                    $file->version_number =  $latestVersion + 1 ;
+
                     $file->user_id        = $student->user_id;
                     $file->upload_date    = Time::now();
                     $file->size_bytes     = $this->request->data['submission_file']['size'];

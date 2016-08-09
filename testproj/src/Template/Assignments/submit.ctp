@@ -9,7 +9,7 @@
             <legend><?= __('New Submission') ?></legend>
             <?php
                 echo $this->Form->input('name');
-                echo $this->Form->input('version_number');
+                //echo $this->Form->input('version_number');
                 echo $this->Form->input('submission_file',['type' => 'file']);
             ?>
         </fieldset>
