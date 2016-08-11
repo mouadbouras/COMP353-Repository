@@ -6,6 +6,7 @@ use Cake\ORM\TableRegistry;
 use App\Model\Entity\User;
 use App\Model\Entity\ArchiveFile;
 use App\Model\Entity\ArchiveSubmission;
+use ZipArchive;
 
 /**
  * Sections Controller
@@ -49,31 +50,45 @@ class SectionsController extends AppController
     }
 
     public function archiveFiles($id){
-        $this->loadModel('ArchiveSubmissions'); 
-        $this->loadModel('ArchiveFiles'); 
-        $this->loadModel('Files'); 
+        $section = $this->Sections->get($id, 
+            ['contain' => 
+                ['Assignments', 
+                'Assignments.Submissions', 
+                'Assignments.Submissions.Files', 
+                'Assignments.Submissions.Teams']]);
 
-        $assignments = $this->Assignments->find('all',
-            ['contain' => ['Submissions', 'Submissions.Files']])
-            ->where(['section_id' => $id]);
-        foreach ($assignments as $assignment) {
-            foreach($assignment->submissions as $submission){
+        //path to file uploads
+        $filespath = WWW_ROOT.'file_uploads\\';
 
-                //save in archive
-                $newsub = $this->ArchiveSubmissions->newEntity($submission->toArray());
+        //initialize zip file
+        ob_clean();
+        ob_end_flush();
+        $zip = new ZipArchive();
+        $tmp_file = tempnam(TMP,'');
+        $zip->open($tmp_file, ZipArchive::CREATE);
 
-                $newfile = $this->ArchiveFiles->newEntity($submission->file->toArray());
+        //empty zips are invalid
+        if(empty($section->assignments)){
+            $zip->addFromString('/no submissions','');
+        }
+        foreach ($section->assignments as $asg) {
+            if(empty($asg->submissions)){
+                $zip->addFromString($asg->name.'/no submissions','');
+            }
+            //add all files to zip
+            foreach($asg->submissions as $submission){
+                $filePath = $filespath.$submission->file->file_name;
+                $zipPath = $asg->name.'/Team '.$submission->team->id.'/'.$submission->file->name.'.'.pathinfo($filePath, PATHINFO_EXTENSION);
 
-                $this->ArchiveFiles->save($newfile);
-                $this->ArchiveSubmissions->save($newsub);
-
-                //delete originals
-                $this->Files->delete($submission->file);
-                $this->Submissions->delete($submission);
+                $download_file = file_get_contents($filePath);
+                $zip->addFromString($zipPath,$download_file);
             }
         }
-        return $this->redirect(['action' => 'view', $id]);
+        $zip->close();
 
+        header('Content-disposition: attachment; filename=section '.$section->id.'.zip');
+        header('Content-type: application/zip');
+        readfile($tmp_file);
     }
 
     /**

@@ -26,9 +26,8 @@
     <br><br>
 <?php if($canArchive){ ?>
     This course has now ended.<br>
-    Would you like to archive the group files?<br>
+    Would you like to get an archive of all group files?<br>
     <?= $this->Html->link('Archive Files', 
         ['controller' => 'Sections', 'action' => 'archiveFiles', $section->id],
-        ['class' => 'btn btn-warning',
-         'confirm' => __('Are you sure you want to archive all files for Section {0}? This will move all the files for all teams in the section to the archive.', $section->id)]); ?>
+        ['class' => 'btn btn-warning']); ?>
 <?php } ?>

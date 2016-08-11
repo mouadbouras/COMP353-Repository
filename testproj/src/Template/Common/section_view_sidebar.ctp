@@ -1,5 +1,6 @@
 <?php $this->extend('/Common/sidebar'); ?>
 <?php 
+use Cake\I18n\Time;
 	$this->set('sidebar_title', $section->course->name.' \ Section '.$section->id.'<br>'.$section->semester->name); 
 
 
@@ -48,10 +49,6 @@
 				 'url' => ['controller' => 'Assignments', 
 				 		   'action' => 'Add',
 				 		   $section->id]]
-
-
-			
-
 			]];
 	}
 
@@ -73,14 +70,25 @@
 	}
 
 	if($user->isAdmin()){
-		$linkgroups[] = [
-			'title' => 'Admin tools',
-			'links' => [
+		$links = 
+			[
 				['text' => 'Manage Groups', 
 				 'url' => ['controller' => 'Teams', 
 				 		   'action' => 'index',
 				 		   	$section->id]]
-			]];
+			];
+
+		$semesterEnd = $section->semester->end_date;
+        if($semesterEnd <= Time::now()->subHours(4)){
+            $links[] = 
+           		['text' => 'Get Archive', 
+				 'url' => ['controller' => 'Sections', 
+				 		   'action' => 'archiveFiles',
+				 		   	$section->id]];
+        }
+		$linkgroups[] = [
+			'title' => 'Admin tools',
+			'links' => $links];
 	}
 
 	$this->set('linkgroups', $linkgroups);
