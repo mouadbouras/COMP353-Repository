@@ -65,6 +65,10 @@ class SubmissionsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
+            ->requirePresence('size_change', 'create')
+            ->notEmpty('size_change');
+
+        $validator
             ->boolean('is_deleted')
             ->requirePresence('is_deleted', 'create')
             ->notEmpty('is_deleted');
@@ -72,6 +76,11 @@ class SubmissionsTable extends Table
         $validator
             ->dateTime('deletion_date')
             ->allowEmpty('deletion_date');
+
+        $validator
+            ->boolean('is_active')
+            ->requirePresence('is_active', 'create')
+            ->notEmpty('is_active');
 
         return $validator;
     }

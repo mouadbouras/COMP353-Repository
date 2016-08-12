@@ -124,22 +124,36 @@ class TeamsController extends AppController
         ])-> count();
         $this->set('totalTeamSubmissions', $totalTeamSubmissions);
 
-
+        $this->loadModel('Interactions');
+        
+        $downloads = [];
         $contributions = array();
-
+        $sizechanges = [];
         foreach($students as $r)
         {
-            $count = $this->Submissions->find('all', [
+            $dcount = $this->Interactions->find('all')
+                ->where(['team_id' => $id, 'user_id' => $r->user_id, 'action_code' => 0])->count();
+            $downloads[$r->user_id] = $dcount;
+
+            $subs = $this->Submissions->find('all', [
                 'conditions' => [
                                     'user_id' => $r->user_id ,
                                     'team_id' => $id 
                                 ],
                 'contain' => ['Files'],
-                ])->count();
-            $contributions[$r->user_id] = $count ;
+            ]);
+            $contributions[$r->user_id] = $subs->count();
+
+            $total = 0;
+            foreach ($subs as $sub) {
+                $total += $sub->size_change;
+            }
+            $sizechanges[$r->user_id] = $total;
         }
         
+        $this->set('downloads', $downloads);
         $this->set('contributions', $contributions);
+        $this->set('sizechanges', $sizechanges);
 
         $canEdit = $user->isInstructor($team->section_id) || $user->isAdmin();
         $this->set('canEdit', $canEdit);

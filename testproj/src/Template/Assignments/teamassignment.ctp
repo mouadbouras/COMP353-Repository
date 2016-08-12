@@ -59,7 +59,7 @@
 
                 <td><?= h($active_submission->file->version_number) ?></td>
                 <td><?= h($active_submission->file->upload_date) ?></td>
-                <td><?= $this->Html->link($active_submission->file->name, ['action' => 'download' , $active_submission->file->file_name ] ); ?></td>
+                <td><?= $this->Html->link($active_submission->file->name, ['action' => 'download' , $active_submission->file->id ] ); ?></td>
                 </tr>
                 <?php }  ?>
             </tbody>
@@ -77,7 +77,7 @@
                     <th><?= h('Checksum') ?></th>
                     <th><?= h('IP Address') ?></th>
                     <th><?= h('Size') ?></th>
-
+                    <th><?= h('Size Change') ?></th>
 
                     <th><?= h('Version') ?></th>
                     <th><?= h('Submission Date') ?></th>
@@ -93,10 +93,15 @@
                     <td><?= h($submission->file->checksum) ?></td>
                     <td><?= h($submission->file->ip_address) ?></td>
                     <td><?= h($submission->file->size_bytes / 1000) . "KB" ?></td>
-
+                    <td 
+                    <?= ($submission->size_change > 0)?'style="color: lime"':'' ?>
+                    <?= ($submission->size_change < 0)?'style="color: red"':'' ?>>
+                        <?= (($submission->size_change > 0)?'+':'').h($submission->size_change / 1000) . "KB" ?>
+                    </td>
+                
                     <td><?= h($submission->file->version_number) ?></td>
                     <td><?= h($submission->file->upload_date) ?></td>
-                    <td><?= $this->Html->link(h($submission->file->name), ['action' => 'download' , $submission->file->file_name ] ); ?></td>
+                    <td><?= $this->Html->link(h($submission->file->name), ['action' => 'download' , $submission->file->id ] ); ?></td>
                 </tr>
 
                 <?php endforeach;  ?>

@@ -84,4 +84,9 @@ class User extends Entity
             return $student->team;
         }
     }
+
+    public function isInGroup($groupid){
+        $studentsTable = TableRegistry::get('Students');
+        return $studentsTable->exists(['user_id' => $this->id, 'team_id' => $groupid]);
+    }
 }

@@ -4,22 +4,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Submission Entity
+ * Interaction Entity
  *
  * @property int $id
- * @property int $assignment_id
+ * @property int $action_code
+ * @property int $user_id
  * @property int $team_id
  * @property int $file_id
- * @property int $size_change
- * @property bool $is_deleted
- * @property \Cake\I18n\Time $deletion_date
- * @property bool $is_active
  *
- * @property \App\Model\Entity\Assignment $assignment
- * @property \App\Model\Entity\Team $team
+ * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\File $file
  */
-class Submission extends Entity
+class Interaction extends Entity
 {
 
     /**

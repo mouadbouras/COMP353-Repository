@@ -1,7 +1,6 @@
 <?php $this->extend('/Common/section_view_sidebar'); ?>
 
 <?= $this->Flash->render() ?>
-
 <div class="row">
 <div class=" col-xs-12 ">
         <h3><?= h('View Assignment') ?></h3>
@@ -63,7 +62,7 @@
 
                 <td><?= h($active_submission->file->version_number) ?></td>
                 <td><?= h($active_submission->file->upload_date) ?></td>
-                <td><?= $this->Html->link($active_submission->file->name, ['action' => 'download' , $active_submission->file->file_name ] ); ?></td>
+                <td><?= $this->Html->link($active_submission->file->name, ['action' => 'download' , $active_submission->file->id ] ); ?></td>
                 <?=  ($active_submission->is_deleted == 0) ? 
                      "<td>" . $this->Form->postLink(__('Delete'), ['action' => 'deletefile', $active_submission->file->id, $active_submission->assignment_id ,$section->id ], ['confirm' => __('Are you sure you want to delete {0}?', $active_submission->file->name)]) .
                      "</td>"  
@@ -89,6 +88,7 @@
                 <th><?= h('Checksum') ?></th>
                 <th><?= h('IP Address') ?></th>
                 <th><?= h('Size') ?></th>
+                <th><?= h('Size Change') ?></th>
 
 
                 <th><?= h('Version') ?></th>
@@ -110,10 +110,15 @@
                 <td><?= h($submission->file->checksum) ?></td>
                 <td><?= h($submission->file->ip_address) ?></td>
                 <td><?= h($submission->file->size_bytes / 1000) . "KB" ?></td>
+                <td 
+                <?= ($submission->size_change > 0)?'style="color: lime"':'' ?>
+                <?= ($submission->size_change < 0)?'style="color: red"':'' ?>>
+                    <?= (($submission->size_change > 0)?'+':'').h($submission->size_change / 1000) . "KB" ?>
+                </td>
 
                 <td><?= h($submission->file->version_number) ?></td>
                 <td><?= h($submission->file->upload_date) ?></td>
-                <td><?= $this->Html->link($submission->file->name, ['action' => 'download' , $submission->file->file_name ] ); ?></td>
+                <td><?= $this->Html->link($submission->file->name, ['action' => 'download' , $submission->file->id ] ); ?></td>
                 <?php  
                     if ($submission->is_deleted == 0) {
 

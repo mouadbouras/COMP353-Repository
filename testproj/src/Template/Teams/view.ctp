@@ -77,7 +77,10 @@
         <th>Last Name</th>
         <th>Role</th>
         <th>Submitted Files</th>
-        <th>Submission Rate</th>
+        <th>Contribution Rate</th>
+        <th>Downloads</th>
+        <th>Total Interactions</th>
+        <th>Total Size Changes</th>
     </tr>
 
     <?php foreach($students as $student): ?>
@@ -88,9 +91,17 @@
             <td><?= ($student->user->id == $team->leader_user_id)?'Leader':'-' ?></td>
             <td><?= floatval($contributions[$student->user->id]) ?></td>
             <td><?= ($totalTeamSubmissions==0) ? 0 . "%" : number_format(floatval($contributions[$student->user->id]/$totalTeamSubmissions ) * 100 , 2) . "%" ?></td>
+            <td><?= $downloads[$student->user->id] ?></td>
+            <td><?= $contributions[$student->user->id] + $downloads[$student->user->id] ?></td>
+
+
+                <td 
+                <?= ($sizechanges[$student->user->id] > 0)?'style="color: lime"':'' ?>
+                <?= ($sizechanges[$student->user->id] < 0)?'style="color: red"':'' ?>>
+                    <?= (($sizechanges[$student->user->id] > 0)?'+':'').h($sizechanges[$student->user->id] / 1000) . "KB" ?>
+                </td>
         </tr>
     <?php endforeach; ?>
-   
 
 </table>
 

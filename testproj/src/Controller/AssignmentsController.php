@@ -363,12 +363,17 @@ class AssignmentsController extends AppController
                     $file->checksum       = md5_file($this->request->data['submission_file']['tmp_name']);
                     $file->ip_address     = $this->get_client_ip();
 
+                    $activesize = 0;
+                    if($cursub = $this->getActiveSubmission($id, $student->team_id)){
+                        $activesize = $cursub->file->size_bytes;
+                    }
+
                     if ($this->Files->save($file)) {
 
                         $submission->assignment_id = $id;
                         $submission->team_id = $student->team_id;
                         $submission->file_id = $file->id;
-
+                        $submission->size_change = $file->size_bytes - $activesize;
 
 
                         if ($this->Submissions->save($submission)) {     
@@ -475,11 +480,30 @@ class AssignmentsController extends AppController
         return $this->redirect(['action' => 'assignment' , $assignment, 0,$sectionid] );
     }
 
-    public function download($fileName) {
-        $path = WWW_ROOT . '/file_uploads//' . $fileName;
+    public function download($fileid) {
+        $file = $this->Files->get($fileid, 
+            ['contain' => ['Submissions']]);
+
+        //only track if student in team
+        //(dont track TA download)
+        $user = new User($this->Auth->user());
+        $fileteam = $file->submissions[0]->team_id;
+        //if student in team
+        if($user->isInGroup($fileteam)){
+            $this->loadModel('Interactions');
+            $interaction = $this->Interactions->newEntity();
+            $interaction->action_code = 0;
+            $interaction->user_id = $user->id;
+            $interaction->team_id = $fileteam;
+            $interaction->file_id = $file->id;
+            $this->Interactions->save($interaction);
+        }
+
+
+        $path = WWW_ROOT . '/file_uploads//' . $file->file_name;
         $this->response->file($path, array(
             'download' => true,
-            'name' => $fileName,
+            'name' => $file->file_name,
         ));
         return $this->response;
     }

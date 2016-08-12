@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\SubmissionsTable;
+use App\Model\Table\InteractionsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\SubmissionsTable Test Case
+ * App\Model\Table\InteractionsTable Test Case
  */
-class SubmissionsTableTest extends TestCase
+class InteractionsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\SubmissionsTable
+     * @var \App\Model\Table\InteractionsTable
      */
-    public $Submissions;
+    public $Interactions;
 
     /**
      * Fixtures
@@ -24,13 +24,14 @@ class SubmissionsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.interactions',
+        'app.users',
+        'app.files',
         'app.submissions',
         'app.assignments',
         'app.sections',
         'app.courses',
         'app.semesters',
-        'app.users',
-        'app.files',
         'app.students',
         'app.teams'
     ];
@@ -43,8 +44,8 @@ class SubmissionsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Submissions') ? [] : ['className' => 'App\Model\Table\SubmissionsTable'];
-        $this->Submissions = TableRegistry::get('Submissions', $config);
+        $config = TableRegistry::exists('Interactions') ? [] : ['className' => 'App\Model\Table\InteractionsTable'];
+        $this->Interactions = TableRegistry::get('Interactions', $config);
     }
 
     /**
@@ -54,7 +55,7 @@ class SubmissionsTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Submissions);
+        unset($this->Interactions);
 
         parent::tearDown();
     }
@@ -85,16 +86,6 @@ class SubmissionsTableTest extends TestCase
      * @return void
      */
     public function testBuildRules()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test getSizeUsed method
-     *
-     * @return void
-     */
-    public function testGetSizeUsed()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
