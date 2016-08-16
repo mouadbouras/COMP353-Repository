@@ -61,7 +61,7 @@ class SectionsController extends AppController
         $filespath = WWW_ROOT.'file_uploads\\';
 
         //initialize zip file
-        ob_clean();
+        ob_flush();
         ob_end_flush();
         $zip = new ZipArchive();
         $tmp_file = tempnam(TMP,'');
